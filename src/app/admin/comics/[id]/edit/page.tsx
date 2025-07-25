@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Comic } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { comicsService } from '@/services/firebase';
-import { uploadToImgbbClient } from '@/lib/imgbb-client';
+import { uploadToCloudinaryClient } from '@/lib/cloudinary-client';
 
 const comicSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -111,7 +111,12 @@ export default function EditComicPage() {
 
       // Upload new cover image if one was selected
       if (coverImage) {
-        coverImageUrl = await uploadToImgbbClient(coverImage);
+        // Generate custom filename for cover image in format: comicName_date
+        const sanitizedTitle = data.title.replace(/[^a-zA-Z0-9]/g, '_');
+        const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+        const coverImageName = `${sanitizedTitle}_${currentDate}`;
+        
+        coverImageUrl = await uploadToCloudinaryClient(coverImage, coverImageName);
       }
 
       // Update comic using direct service call

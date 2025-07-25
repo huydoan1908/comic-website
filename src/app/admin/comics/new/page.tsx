@@ -14,7 +14,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { comicsService } from '@/services/firebase';
-import { uploadToImgbbClient } from '@/lib/imgbb-client';
+import { uploadToCloudinaryClient } from '@/lib/cloudinary-client';
 
 const comicSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -66,8 +66,13 @@ export default function NewComicPage() {
     setLoading(true);
 
     try {
-      // Upload cover image directly to imgbb
-      const coverImageUrl = await uploadToImgbbClient(coverImage);
+      // Generate custom filename for cover image in format: comicName_date
+      const sanitizedTitle = data.title.replace(/[^a-zA-Z0-9]/g, '_');
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      const coverImageName = `${sanitizedTitle}_${currentDate}`;
+
+      // Upload cover image directly to Cloudinary with custom name
+      const coverImageUrl = await uploadToCloudinaryClient(coverImage, coverImageName);
 
       // Create comic using direct service call
       const comicId = await comicsService.create({

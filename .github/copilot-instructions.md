@@ -7,7 +7,7 @@ This is a Next.js 15 comic publishing and reading platform with the following te
 - **Framework**: Next.js 15 with App Router and TypeScript
 - **Database**: Firebase Firestore
 - **Authentication**: Firebase Authentication
-- **Image Storage**: imgbb API
+- **Image Storage**: Cloudinary API
 - **Styling**: Tailwind CSS
 - **Forms**: React Hook Form with Zod validation
 
@@ -24,7 +24,7 @@ This is a Next.js 15 comic publishing and reading platform with the following te
 ## Key Features
 - Responsive comic reader with navigation controls
 - Admin dashboard with CRUD operations
-- Image upload to imgbb with URL storage
+- Image upload to Cloudinary with URL storage
 - Role-based authentication system
 - Search and filter functionality
 

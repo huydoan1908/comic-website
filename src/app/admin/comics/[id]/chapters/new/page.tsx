@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,8 +12,9 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { useAuth } from '@/hooks/useAuth';
-import { chaptersService } from '@/services/firebase';
-import { uploadMultipleToImgbbClient } from '@/lib/imgbb-client';
+import { chaptersService, comicsService } from '@/services/firebase';
+import { uploadMultipleToCloudinaryClient } from '@/lib/cloudinary-client';
+import { Comic } from '@/types';
 
 const chapterSchema = z.object({
   chapterNumber: z.number().min(1, 'Chapter number must be at least 1'),
@@ -31,6 +32,7 @@ export default function NewChapterPage() {
   const [loading, setLoading] = useState(false);
   const [pageFiles, setPageFiles] = useState<File[]>([]);
   const [pagePreviews, setPagePreviews] = useState<string[]>([]);
+  const [comic, setComic] = useState<Comic | null>(null);
 
   const {
     register,
@@ -39,6 +41,22 @@ export default function NewChapterPage() {
   } = useForm<ChapterFormData>({
     resolver: zodResolver(chapterSchema),
   });
+
+  // Fetch comic data
+  useEffect(() => {
+    const fetchComic = async () => {
+      try {
+        const comicData = await comicsService.getById(comicId);
+        setComic(comicData);
+      } catch (error) {
+        console.error('Error fetching comic:', error);
+      }
+    };
+
+    if (comicId) {
+      fetchComic();
+    }
+  }, [comicId]);
 
   // Check admin permissions
   if (!user || !isAdmin) {
@@ -53,10 +71,13 @@ export default function NewChapterPage() {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    setPageFiles(prev => [...prev, ...files]);
+    // Sort files by name before adding them
+    const sortedFiles = files.sort((a, b) => a.name.localeCompare(b.name));
+    console.log('sortedFiles:', sortedFiles);
+    setPageFiles(prev => [...prev, ...sortedFiles]);
 
     // Create previews
-    files.forEach(file => {
+    sortedFiles.forEach(file => {
       const reader = new FileReader();
       reader.onload = () => {
         setPagePreviews(prev => [...prev, reader.result as string]);
@@ -76,11 +97,22 @@ export default function NewChapterPage() {
       return;
     }
 
+    if (!comic) {
+      alert('Comic data not loaded. Please try again.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Upload all page images directly to imgbb
-      const pageImageUrls = await uploadMultipleToImgbbClient(pageFiles);
+      // Generate custom filenames in format: comicName_page_index
+      const sanitizedComicName = comic.title.replace(/[^a-zA-Z0-9]/g, '_');
+      const customFilenames = pageFiles.map((_, index) => 
+        `${sanitizedComicName}_chap${data.chapterNumber}_page_${index + 1}`
+      );
+
+      // Upload all page images directly to Cloudinary with custom names
+      const pageImageUrls = await uploadMultipleToCloudinaryClient(pageFiles, customFilenames);
 
       // Create chapter
       await chaptersService.create(comicId, {

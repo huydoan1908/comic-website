@@ -46,25 +46,14 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
     }
   }, [currentPageIndex, currentChapterIndex, chapters]);
 
-  const nextChapter = useCallback(() => {
-    if (currentChapterIndex < chapters.length - 1) {
-      setCurrentChapterIndex((prev) => prev + 1);
-      setCurrentPageIndex(0);
-    }
-  }, [currentChapterIndex, chapters.length]);
-
-  const prevChapter = useCallback(() => {
-    if (currentChapterIndex > 0) {
-      setCurrentChapterIndex((prev) => prev - 1);
-      setCurrentPageIndex(0);
-    }
-  }, [currentChapterIndex]);
-
-  const goToChapter = (chapterIndex: number) => {
-    setCurrentChapterIndex(chapterIndex);
-    setCurrentPageIndex(0);
-    setShowChapterList(false);
+  const getChapterUrl = (chapterIndex: number) => {
+    if (!comicId) return '#';
+    const chapter = chapters[chapterIndex];
+    return `/read/${comicId}/${chapter.id}`;
   };
+
+  const nextChapterUrl = currentChapterIndex < chapters.length - 1 ? getChapterUrl(currentChapterIndex + 1) : null;
+  const prevChapterUrl = currentChapterIndex > 0 ? getChapterUrl(currentChapterIndex - 1) : null;
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -178,10 +167,19 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
       <div className="fixed bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/90 to-black/70 p-4 border-t border-gray-700/50">
         <div className="flex items-center justify-center text-white mb-2">
           <div className="flex items-center space-x-3">
-            <Button variant="secondary" size="sm" onClick={prevChapter} disabled={currentChapterIndex === 0}>
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Prev
-            </Button>
+            {prevChapterUrl ? (
+              <Link href={prevChapterUrl}>
+                <Button variant="secondary" size="sm">
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Prev
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="secondary" size="sm" disabled>
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Prev
+              </Button>
+            )}
             <Button variant="secondary" size="sm" onClick={() => setViewMode(viewMode === "single" ? "continuous" : "single")} title={`Switch to ${viewMode === "single" ? "continuous" : "single"} view`}>
               {viewMode === "single" ? <Scroll className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
             </Button>
@@ -204,10 +202,19 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
             <Button variant="secondary" size="sm" onClick={scrollToTop} title="Back to top">
               <ChevronUp className="w-4 h-4" />
             </Button>
-            <Button variant="secondary" size="sm" onClick={nextChapter} disabled={currentChapterIndex === chapters.length - 1}>
-              Next
-              <ArrowRight className="w-4 h-4 ml-1" />
-            </Button>
+            {nextChapterUrl ? (
+              <Link href={nextChapterUrl}>
+                <Button variant="secondary" size="sm">
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="secondary" size="sm" disabled>
+                Next
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            )}
           </div>
         </div>
 
@@ -238,11 +245,11 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
             </div>
             <div className="overflow-y-auto max-h-96">
               {chapters.map((chapter, index) => (
-                <button key={chapter.id} onClick={() => goToChapter(index)} className={`w-full text-left p-4 hover:bg-gray-50 border-b transition-colors ${index === currentChapterIndex ? "bg-blue-50 border-blue-200" : ""}`}>
+                <Link key={chapter.id} href={getChapterUrl(index)} className={`block w-full text-left p-4 hover:bg-gray-50 border-b transition-colors ${index === currentChapterIndex ? "bg-blue-50 border-blue-200" : ""}`}>
                   <div className="font-medium">Chapter {chapter.chapterNumber}</div>
                   {chapter.title && <div className="text-sm text-gray-600">{chapter.title}</div>}
                   <div className="text-xs text-gray-500">{chapter.pageImageUrls.length} pages</div>
-                </button>
+                </Link>
               ))}
             </div>
           </div>

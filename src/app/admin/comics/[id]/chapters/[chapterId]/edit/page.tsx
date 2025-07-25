@@ -11,10 +11,11 @@ import { ArrowLeft, Upload, X, Move } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Chapter } from '@/types';
+import { Chapter, Comic } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
-import { chaptersService } from '@/services/firebase';
-import { uploadMultipleToImgbbClient } from '@/lib/imgbb-client';
+import { chaptersService, comicsService } from '@/services/firebase';
+import { uploadMultipleToCloudinaryClient } from '@/lib/cloudinary-client';
+import { da } from 'zod/locales';
 
 const chapterSchema = z.object({
   chapterNumber: z.number().min(1, 'Chapter number must be at least 1'),
@@ -33,6 +34,7 @@ export default function EditChapterPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [chapter, setChapter] = useState<Chapter | null>(null);
+  const [comic, setComic] = useState<Comic | null>(null);
   const [existingPages, setExistingPages] = useState<string[]>([]);
   const [newPageFiles, setNewPageFiles] = useState<File[]>([]);
   const [newPagePreviews, setNewPagePreviews] = useState<string[]>([]);
@@ -50,7 +52,13 @@ export default function EditChapterPage() {
   const fetchChapter = useCallback(async () => {
     try {
       setLoading(true);
-      const chapterData = await chaptersService.getById(comicId, chapterId);
+      
+      // Fetch both chapter and comic data in parallel
+      const [chapterData, comicData] = await Promise.all([
+        chaptersService.getById(comicId, chapterId),
+        comicsService.getById(comicId)
+      ]);
+      
       if (chapterData) {
         setChapter(chapterData);
         setExistingPages(chapterData.pageImageUrls);
@@ -63,9 +71,13 @@ export default function EditChapterPage() {
       } else {
         throw new Error('Chapter not found');
       }
+
+      if (comicData) {
+        setComic(comicData);
+      }
     } catch (error) {
-      console.error('Error fetching chapter:', error);
-      alert('Failed to load chapter data');
+      console.error('Error fetching data:', error);
+      alert('Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -123,13 +135,25 @@ export default function EditChapterPage() {
   };
 
   const onSubmit = async (data: ChapterFormData) => {
+    if (!comic) {
+      alert('Comic data not loaded. Please try again.');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       // First, upload new page images if any
       let newPageImageUrls: string[] = [];
       if (newPageFiles.length > 0) {
-        newPageImageUrls = await uploadMultipleToImgbbClient(newPageFiles);
+        // Generate custom filenames for new pages
+        const sanitizedComicName = comic.title.replace(/[^a-zA-Z0-9]/g, '_');
+        const existingPageCount = existingPages.length - pagesToDelete.length;
+        const customFilenames = newPageFiles.map((_, index) => 
+          `${sanitizedComicName}_chap${data.chapterNumber}_page_${existingPageCount + index + 1}`
+        );
+        
+        newPageImageUrls = await uploadMultipleToCloudinaryClient(newPageFiles, customFilenames);
       }
 
       // Build final page URLs array

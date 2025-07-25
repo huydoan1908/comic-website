@@ -1,6 +1,6 @@
 # ComicHub - Comic Publishing Platform
 
-A modern, full-stack web application for publishing and reading comics online, built with Next.js, Firebase Firestore, and imgbb for image storage.
+A modern, full-stack web application for publishing and reading comics online, built with Next.js, Firebase Firestore, and Cloudinary for image storage.
 
 ## Features
 
@@ -13,7 +13,7 @@ A modern, full-stack web application for publishing and reading comics online, b
 ### Admin Features
 - **Comic Management**: Create, read, update, and delete comics
 - **Chapter Management**: Add chapters with multiple pages to comics
-- **Image Upload**: Upload cover images and comic pages via imgbb
+- **Image Upload**: Upload cover images and comic pages via Cloudinary
 - **Role-Based Access**: Secure admin dashboard with Firebase Authentication
 
 ## Tech Stack
@@ -21,7 +21,7 @@ A modern, full-stack web application for publishing and reading comics online, b
 - **Frontend & Backend**: Next.js 15 with App Router and TypeScript
 - **Database**: Firebase Firestore
 - **Authentication**: Firebase Authentication
-- **Image Storage**: imgbb API
+- **Image Storage**: Cloudinary API
 - **Styling**: Tailwind CSS
 - **Forms**: React Hook Form with Zod validation
 - **Icons**: Lucide React
@@ -32,7 +32,7 @@ A modern, full-stack web application for publishing and reading comics online, b
 
 - Node.js 18+ and npm
 - Firebase project with Firestore enabled
-- imgbb API key
+- Cloudinary account with upload preset configured
 
 ### Installation
 
@@ -64,12 +64,14 @@ A modern, full-stack web application for publishing and reading comics online, b
    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
    NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
-   # imgbb Configuration (Client-side upload)
-   NEXT_PUBLIC_IMGBB_API_KEY=your_imgbb_api_key
+   # Cloudinary Configuration (Client-side upload)
+   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+   NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_upload_preset
 
-   # NextAuth Configuration
-   NEXTAUTH_SECRET=your_nextauth_secret
-   NEXTAUTH_URL=http://localhost:3000
+   # Cloudinary Configuration (Server-side upload - if needed)
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
    ```
 
 4. **Set up Firebase**
@@ -80,10 +82,17 @@ A modern, full-stack web application for publishing and reading comics online, b
    - Add your domain to authorized domains
    - Create an admin user and add them to the `users` collection with role: 'admin'
 
-5. **Get imgbb API Key**
+5. **Set up Cloudinary**
    
-   - Sign up at [imgbb.com](https://imgbb.com/)
-   - Get your API key from the API section
+   - Sign up at [Cloudinary](https://cloudinary.com/)
+   - Get your cloud name from the dashboard
+   - Create an unsigned upload preset for client-side uploads:
+     - Go to Settings > Upload
+     - Scroll to "Upload presets"
+     - Click "Add upload preset"
+     - Set Signing Mode to "Unsigned"
+     - Configure folder and other settings as needed
+     - Save the preset name
 
 6. **Run the development server**
    ```bash

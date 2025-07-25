@@ -41,43 +41,24 @@ export interface ChapterFormData {
   pages?: FileList;
 }
 
-export interface ImgbbResponse {
-  data: {
-    id: string;
-    title: string;
-    url_viewer: string;
-    url: string;
-    display_url: string;
-    width: number;
-    height: number;
-    size: number;
-    time: number;
-    expiration: number;
-    image: {
-      filename: string;
-      name: string;
-      mime: string;
-      extension: string;
-      url: string;
-    };
-    thumb: {
-      filename: string;
-      name: string;
-      mime: string;
-      extension: string;
-      url: string;
-    };
-    medium: {
-      filename: string;
-      name: string;
-      mime: string;
-      extension: string;
-      url: string;
-    };
-    delete_url: string;
-  };
-  success: boolean;
-  status: number;
+export interface CloudinaryResponse {
+  public_id: string;
+  version: number;
+  signature: string;
+  width: number;
+  height: number;
+  format: string;
+  resource_type: string;
+  created_at: string;
+  tags: string[];
+  bytes: number;
+  type: string;
+  etag: string;
+  placeholder: boolean;
+  url: string;
+  secure_url: string;
+  folder: string;
+  original_filename: string;
 }
 
 export interface ComicWithChapters extends Comic {
