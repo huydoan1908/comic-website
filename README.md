@@ -64,8 +64,8 @@ A modern, full-stack web application for publishing and reading comics online, b
    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
    NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
-   # imgbb Configuration
-   IMGBB_API_KEY=your_imgbb_api_key
+   # imgbb Configuration (Client-side upload)
+   NEXT_PUBLIC_IMGBB_API_KEY=your_imgbb_api_key
 
    # NextAuth Configuration
    NEXTAUTH_SECRET=your_nextauth_secret
@@ -121,24 +121,19 @@ users/
     └── role: 'admin' | 'user'
 ```
 
-## API Routes
+## Architecture
 
-### Comics
-- `GET /api/comics` - Get all comics (with search and genre filtering)
-- `POST /api/comics` - Create a new comic
-- `GET /api/comics/[id]` - Get comic by ID
-- `PUT /api/comics/[id]` - Update comic
-- `DELETE /api/comics/[id]` - Delete comic
+This application uses a **client-side Firebase architecture** with direct service calls instead of API routes for comic and chapter operations. This approach provides:
 
-### Chapters
-- `GET /api/comics/[id]/chapters` - Get all chapters for a comic
-- `POST /api/comics/[id]/chapters` - Create a new chapter
-- `GET /api/comics/[id]/chapters/[chapterId]` - Get chapter by ID
-- `PUT /api/comics/[id]/chapters/[chapterId]` - Update chapter
-- `DELETE /api/comics/[id]/chapters/[chapterId]` - Delete chapter
+- **Simplified Authentication**: Direct Firebase Auth integration without server-side session management
+- **Real-time Updates**: Automatic data synchronization through Firestore
+- **Better Performance**: Reduced API overhead and faster data access
+- **Firestore Security Rules**: Database-level permissions instead of API-level authentication
 
-### Upload
-- `POST /api/upload` - Upload images to imgbb
+### Firebase Services
+- **Comics Service**: Direct Firestore operations for comic CRUD
+- **Chapters Service**: Direct Firestore operations for chapter CRUD  
+- **Authentication**: Firebase Auth with role-based access control
 
 ## Page Routes
 

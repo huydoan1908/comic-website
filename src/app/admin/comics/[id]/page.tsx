@@ -9,10 +9,13 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ChapterList } from '@/components/ChapterList';
 import { Comic, Chapter } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
+import { comicsService, chaptersService } from '@/services/firebase';
 
 export default function ComicManagePage() {
   const params = useParams();
   const comicId = params.id as string;
+  const { user, isAdmin } = useAuth();
   
   const [comic, setComic] = useState<Comic | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -24,20 +27,15 @@ export default function ComicManagePage() {
       setLoading(true);
       
       // Fetch comic details
-      const comicResponse = await fetch(`/api/comics/${comicId}`);
-      if (!comicResponse.ok) {
-        throw new Error('Failed to fetch comic');
+      const comic = await comicsService.getById(comicId);
+      if (!comic) {
+        throw new Error('Comic not found');
       }
-      const comicData = await comicResponse.json();
-      setComic(comicData);
+      setComic(comic);
 
       // Fetch chapters
-      const chaptersResponse = await fetch(`/api/comics/${comicId}/chapters`);
-      if (!chaptersResponse.ok) {
-        throw new Error('Failed to fetch chapters');
-      }
-      const chaptersData = await chaptersResponse.json();
-      setChapters(chaptersData);
+      const chapters = await chaptersService.getByComicId(comicId);
+      setChapters(chapters);
     } catch (error) {
       console.error('Error fetching comic data:', error);
       alert('Failed to load comic data');
@@ -51,20 +49,19 @@ export default function ComicManagePage() {
   }, [fetchComicData]);
 
   const handleDeleteChapter = async (chapterId: string) => {
+    if (!isAdmin) {
+      alert('You must be an admin to delete chapters');
+      return;
+    }
+
     if (!confirm('Are you sure you want to delete this chapter? This action cannot be undone.')) {
       return;
     }
 
     setDeleting(chapterId);
     try {
-      const response = await fetch(`/api/comics/${comicId}/chapters/${chapterId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete chapter');
-      }
-
+      await chaptersService.delete(comicId, chapterId);
+      
       // Refresh chapters list
       await fetchComicData();
     } catch (error) {

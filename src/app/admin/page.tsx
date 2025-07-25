@@ -7,6 +7,8 @@ import { Comic } from '@/types';
 import { timestampToDate, formatTimestamp } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { comicsService } from '@/services/firebase';
+import { useAuth } from '@/hooks/useAuth';
 import { 
   BookOpen, 
   Plus, 
@@ -25,6 +27,7 @@ export default function AdminDashboard() {
     totalChapters: 0,
     recentComics: 0,
   });
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     fetchComics();
@@ -32,20 +35,17 @@ export default function AdminDashboard() {
 
   const fetchComics = async () => {
     try {
-      const response = await fetch('/api/comics');
-      if (response.ok) {
-        const data = await response.json();
-        setComics(data);
-        setStats({
-          totalComics: data.length,
-          totalChapters: 0, // Will be calculated from chapters
-          recentComics: data.filter((comic: Comic) => {
-            const weekAgo = new Date();
-            weekAgo.setDate(weekAgo.getDate() - 7);
-            return timestampToDate(comic.createdAt) > weekAgo;
-          }).length,
-        });
-      }
+      const data = await comicsService.getAll();
+      setComics(data);
+      setStats({
+        totalComics: data.length,
+        totalChapters: 0, // Will be calculated from chapters
+        recentComics: data.filter((comic: Comic) => {
+          const weekAgo = new Date();
+          weekAgo.setDate(weekAgo.getDate() - 7);
+          return timestampToDate(comic.createdAt) > weekAgo;
+        }).length,
+      });
     } catch (error) {
       console.error('Error fetching comics:', error);
     } finally {
@@ -54,16 +54,18 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteComic = async (comicId: string) => {
+    if (!isAdmin) {
+      alert('You must be an admin to delete comics');
+      return;
+    }
+
     if (confirm('Are you sure you want to delete this comic? This action cannot be undone.')) {
       try {
-        const response = await fetch(`/api/comics/${comicId}`, {
-          method: 'DELETE',
-        });
-        if (response.ok) {
-          setComics(comics.filter(comic => comic.id !== comicId));
-        }
+        await comicsService.delete(comicId);
+        setComics(comics.filter(comic => comic.id !== comicId));
       } catch (error) {
         console.error('Error deleting comic:', error);
+        alert('Failed to delete comic');
       }
     }
   };

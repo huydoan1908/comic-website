@@ -12,6 +12,9 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { ArrowLeft, Upload } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/hooks/useAuth';
+import { comicsService } from '@/services/firebase';
+import { uploadToImgbbClient } from '@/lib/imgbb-client';
 
 const comicSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -27,6 +30,7 @@ export default function NewComicPage() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const router = useRouter();
+  const { user, isAdmin } = useAuth();
 
   const {
     register,
@@ -49,6 +53,11 @@ export default function NewComicPage() {
   };
 
   const onSubmit = async (data: ComicFormData) => {
+    if (!isAdmin) {
+      alert('You must be an admin to create comics');
+      return;
+    }
+
     if (!coverImage) {
       alert('Please select a cover image');
       return;
@@ -57,40 +66,19 @@ export default function NewComicPage() {
     setLoading(true);
 
     try {
-      // Upload cover image
-      const formData = new FormData();
-      formData.append('files', coverImage);
-      formData.append('single', 'true');
+      // Upload cover image directly to imgbb
+      const coverImageUrl = await uploadToImgbbClient(coverImage);
 
-      const uploadResponse = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
+      // Create comic using direct service call
+      const comicId = await comicsService.create({
+        title: data.title,
+        description: data.description,
+        author: data.author,
+        genre: data.genre,
+        coverImageUrl,
       });
 
-      if (!uploadResponse.ok) {
-        throw new Error('Failed to upload cover image');
-      }
-
-      const { url: coverImageUrl } = await uploadResponse.json();
-
-      // Create comic
-      const comicResponse = await fetch('/api/comics', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...data,
-          coverImageUrl,
-        }),
-      });
-
-      if (!comicResponse.ok) {
-        throw new Error('Failed to create comic');
-      }
-
-      const { id } = await comicResponse.json();
-      router.push(`/admin/comics/${id}`);
+      router.push(`/admin/comics/${comicId}`);
     } catch (error) {
       console.error('Error creating comic:', error);
       alert('Failed to create comic. Please try again.');

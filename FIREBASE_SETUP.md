@@ -87,7 +87,7 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
 NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
 
-IMGBB_API_KEY=your-imgbb-api-key
+NEXT_PUBLIC_IMGBB_API_KEY=your-imgbb-api-key
 ```
 
 ## How to Find Firebase Auth UID

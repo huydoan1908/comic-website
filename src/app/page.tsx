@@ -6,6 +6,7 @@ import { timestampToDate } from '@/lib/utils';
 import { ComicGrid } from '@/components/ComicGrid';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { comicsService } from '@/services/firebase';
 import { Search, Filter, TrendingUp, Star, Clock } from 'lucide-react';
 
 export default function HomePage() {
@@ -23,15 +24,12 @@ export default function HomePage() {
   const fetchComics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/comics');
-      if (response.ok) {
-        const data = await response.json();
-        setComics(data);
-        
-        // Extract unique genres
-        const uniqueGenres = [...new Set(data.map((comic: Comic) => comic.genre))] as string[];
-        setGenres(uniqueGenres);
-      }
+      const data = await comicsService.getAll();
+      setComics(data);
+      
+      // Extract unique genres
+      const uniqueGenres = [...new Set(data.map((comic: Comic) => comic.genre))] as string[];
+      setGenres(uniqueGenres);
     } catch (error) {
       console.error('Error fetching comics:', error);
     } finally {

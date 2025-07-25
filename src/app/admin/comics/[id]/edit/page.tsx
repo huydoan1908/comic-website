@@ -14,6 +14,8 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Comic } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
+import { comicsService } from '@/services/firebase';
+import { uploadToImgbbClient } from '@/lib/imgbb-client';
 
 const comicSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -29,7 +31,6 @@ export default function EditComicPage() {
   const router = useRouter();
   const comicId = params.id as string;
   const { user, isAdmin } = useAuth();
-  console.log('user:', user, 'isAdmin:', isAdmin);
   
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -49,20 +50,20 @@ export default function EditComicPage() {
   const fetchComic = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/comics/${comicId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch comic');
+      const comic = await comicsService.getById(comicId);
+      if (!comic) {
+        throw new Error('Comic not found');
       }
-      const comicData = await response.json();
-      setComic(comicData);
-      setImagePreview(comicData.coverImageUrl);
+      
+      setComic(comic);
+      setImagePreview(comic.coverImageUrl);
       
       // Populate form
       reset({
-        title: comicData.title,
-        description: comicData.description,
-        author: comicData.author,
-        genre: comicData.genre,
+        title: comic.title,
+        description: comic.description,
+        author: comic.author,
+        genre: comic.genre,
       });
     } catch (error) {
       console.error('Error fetching comic:', error);
@@ -75,6 +76,15 @@ export default function EditComicPage() {
   useEffect(() => {
     fetchComic();
   }, [fetchComic]);
+
+  // Check admin permissions
+  if (!user || !isAdmin) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <p className="text-red-600">Access denied. Admin privileges required.</p>
+      </div>
+    );
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -89,6 +99,11 @@ export default function EditComicPage() {
   };
 
   const onSubmit = async (data: ComicFormData) => {
+    if (!isAdmin) {
+      alert('You must be an admin to edit comics');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -96,38 +111,17 @@ export default function EditComicPage() {
 
       // Upload new cover image if one was selected
       if (coverImage) {
-        const formData = new FormData();
-        formData.append('files', coverImage);
-        formData.append('single', 'true');
-
-        const uploadResponse = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!uploadResponse.ok) {
-          throw new Error('Failed to upload cover image');
-        }
-
-        const { url } = await uploadResponse.json();
-        coverImageUrl = url;
+        coverImageUrl = await uploadToImgbbClient(coverImage);
       }
 
-      // Update comic
-      const comicResponse = await fetch(`/api/comics/${comicId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...data,
-          coverImageUrl,
-        }),
+      // Update comic using direct service call
+      await comicsService.update(comicId, {
+        title: data.title,
+        description: data.description,
+        author: data.author,
+        genre: data.genre,
+        coverImageUrl,
       });
-
-      if (!comicResponse.ok) {
-        throw new Error('Failed to update comic');
-      }
 
       router.push(`/admin/comics/${comicId}`);
     } catch (error) {

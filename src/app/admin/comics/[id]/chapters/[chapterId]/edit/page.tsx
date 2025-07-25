@@ -12,6 +12,9 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Chapter } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
+import { chaptersService } from '@/services/firebase';
+import { uploadMultipleToImgbbClient } from '@/lib/imgbb-client';
 
 const chapterSchema = z.object({
   chapterNumber: z.number().min(1, 'Chapter number must be at least 1'),
@@ -23,6 +26,7 @@ type ChapterFormData = z.infer<typeof chapterSchema>;
 export default function EditChapterPage() {
   const params = useParams();
   const router = useRouter();
+  const { user, isAdmin } = useAuth();
   const comicId = params.id as string;
   const chapterId = params.chapterId as string;
   
@@ -46,19 +50,19 @@ export default function EditChapterPage() {
   const fetchChapter = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/comics/${comicId}/chapters/${chapterId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch chapter');
+      const chapterData = await chaptersService.getById(comicId, chapterId);
+      if (chapterData) {
+        setChapter(chapterData);
+        setExistingPages(chapterData.pageImageUrls);
+        
+        // Populate form
+        reset({
+          chapterNumber: chapterData.chapterNumber,
+          title: chapterData.title || '',
+        });
+      } else {
+        throw new Error('Chapter not found');
       }
-      const chapterData = await response.json();
-      setChapter(chapterData);
-      setExistingPages(chapterData.pageImageUrls);
-      
-      // Populate form
-      reset({
-        chapterNumber: chapterData.chapterNumber,
-        title: chapterData.title || '',
-      });
     } catch (error) {
       console.error('Error fetching chapter:', error);
       alert('Failed to load chapter data');
@@ -70,6 +74,15 @@ export default function EditChapterPage() {
   useEffect(() => {
     fetchChapter();
   }, [fetchChapter]);
+
+  // Check admin permissions
+  if (!user || !isAdmin) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <p className="text-red-600">Access denied. Admin privileges required.</p>
+      </div>
+    );
+  }
 
   const handleNewPageFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -116,22 +129,7 @@ export default function EditChapterPage() {
       // First, upload new page images if any
       let newPageImageUrls: string[] = [];
       if (newPageFiles.length > 0) {
-        const formData = new FormData();
-        newPageFiles.forEach(file => {
-          formData.append('files', file);
-        });
-
-        const uploadResponse = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!uploadResponse.ok) {
-          throw new Error('Failed to upload new page images');
-        }
-
-        const { urls } = await uploadResponse.json();
-        newPageImageUrls = urls;
+        newPageImageUrls = await uploadMultipleToImgbbClient(newPageFiles);
       }
 
       // Build final page URLs array
@@ -141,21 +139,11 @@ export default function EditChapterPage() {
       ];
 
       // Update chapter
-      const chapterResponse = await fetch(`/api/comics/${comicId}/chapters/${chapterId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chapterNumber: data.chapterNumber,
-          title: data.title || undefined,
-          pageImageUrls: finalPageUrls,
-        }),
+      await chaptersService.update(comicId, chapterId, {
+        chapterNumber: data.chapterNumber,
+        title: data.title || undefined,
+        pageImageUrls: finalPageUrls,
       });
-
-      if (!chapterResponse.ok) {
-        throw new Error('Failed to update chapter');
-      }
 
       router.push(`/admin/comics/${comicId}`);
     } catch (error) {

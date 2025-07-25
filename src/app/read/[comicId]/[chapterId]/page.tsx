@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Comic, Chapter } from '@/types';
 import { ComicReader } from '@/components/ComicReader';
+import { comicsService, chaptersService } from '@/services/firebase';
 
 export default function ReadPage() {
   const params = useParams();
@@ -16,18 +17,12 @@ export default function ReadPage() {
       if (params.comicId) {
         try {
           // Fetch comic details
-          const comicResponse = await fetch(`/api/comics/${params.comicId}`);
-          if (comicResponse.ok) {
-            const comicData = await comicResponse.json();
-            setComic(comicData);
-          }
+          const comicData = await comicsService.getById(params.comicId as string);
+          setComic(comicData);
 
           // Fetch chapters
-          const chaptersResponse = await fetch(`/api/comics/${params.comicId}/chapters`);
-          if (chaptersResponse.ok) {
-            const chaptersData = await chaptersResponse.json();
-            setChapters(chaptersData);
-          }
+          const chaptersData = await chaptersService.getByComicId(params.comicId as string);
+          setChapters(chaptersData);
         } catch (error) {
           console.error('Error fetching data:', error);
         } finally {
@@ -65,6 +60,7 @@ export default function ReadPage() {
   return (
     <ComicReader
       chapters={chapters}
+      comicId={params.comicId as string}
       initialChapterIndex={validChapterIndex}
       initialPageIndex={0}
       comicTitle={comic.title}

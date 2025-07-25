@@ -9,6 +9,7 @@ import { timestampToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { ChapterList } from '@/components/ChapterList';
+import { comicsService, chaptersService } from '@/services/firebase';
 import { BookOpen, User, Tag, Clock } from 'lucide-react';
 
 export default function ComicDetailPage() {
@@ -22,18 +23,12 @@ export default function ComicDetailPage() {
       if (params.id) {
         try {
           // Fetch comic details
-          const comicResponse = await fetch(`/api/comics/${params.id}`);
-          if (comicResponse.ok) {
-            const comicData = await comicResponse.json();
-            setComic(comicData);
-          }
+          const comicData = await comicsService.getById(params.id as string);
+          setComic(comicData);
 
           // Fetch chapters
-          const chaptersResponse = await fetch(`/api/comics/${params.id}/chapters`);
-          if (chaptersResponse.ok) {
-            const chaptersData = await chaptersResponse.json();
-            setChapters(chaptersData);
-          }
+          const chaptersData = await chaptersService.getByComicId(params.id as string);
+          setChapters(chaptersData);
         } catch (error) {
           console.error('Error fetching data:', error);
         } finally {
