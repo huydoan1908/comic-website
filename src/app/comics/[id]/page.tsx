@@ -1,0 +1,163 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Comic, Chapter } from '@/types';
+import { timestampToDate } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { ChapterList } from '@/components/ChapterList';
+import { BookOpen, User, Tag, Clock } from 'lucide-react';
+
+export default function ComicDetailPage() {
+  const params = useParams();
+  const [comic, setComic] = useState<Comic | null>(null);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (params.id) {
+        try {
+          // Fetch comic details
+          const comicResponse = await fetch(`/api/comics/${params.id}`);
+          if (comicResponse.ok) {
+            const comicData = await comicResponse.json();
+            setComic(comicData);
+          }
+
+          // Fetch chapters
+          const chaptersResponse = await fetch(`/api/comics/${params.id}/chapters`);
+          if (chaptersResponse.ok) {
+            const chaptersData = await chaptersResponse.json();
+            setChapters(chaptersData);
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    fetchData();
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="animate-pulse">
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="lg:w-1/3">
+                <div className="aspect-[3/4] bg-gray-200 rounded-lg"></div>
+              </div>
+              <div className="lg:w-2/3 space-y-4">
+                <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!comic) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Comic Not Found</h1>
+          <Link href="/">
+            <Button>Return Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Comic Details */}
+        <div className="flex flex-col lg:flex-row gap-8 mb-8">
+          {/* Cover Image */}
+          <div className="lg:w-1/3">
+            <div className="aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg">
+              <Image
+                src={comic.coverImageUrl}
+                alt={comic.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+
+          {/* Comic Info */}
+          <div className="lg:w-2/3">
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {comic.title}
+                </h1>
+                
+                <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6">
+                  <div className="flex items-center">
+                    <User className="w-4 h-4 mr-1" />
+                    {comic.author}
+                  </div>
+                  <div className="flex items-center">
+                    <Tag className="w-4 h-4 mr-1" />
+                    {comic.genre}
+                  </div>
+                  <div className="flex items-center">
+                    <BookOpen className="w-4 h-4 mr-1" />
+                    {chapters.length} chapters
+                  </div>
+                  <div className="flex items-center">
+                    <Clock className="w-4 h-4 mr-1" />
+                    {timestampToDate(comic.createdAt).toLocaleDateString()}
+                  </div>
+                </div>
+
+                <p className="text-gray-700 text-lg leading-relaxed">
+                  {comic.description}
+                </p>
+              </div>
+
+              {/* Start Reading Button */}
+              {chapters.length > 0 && (
+                <div>
+                  <Link href={`/read/${comic.id}/${chapters[0].id}`}>
+                    <Button size="lg" className="w-full sm:w-auto">
+                      <BookOpen className="w-5 h-5 mr-2" />
+                      Start Reading
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Chapters List */}
+        <Card>
+          <CardHeader>
+            <h2 className="text-2xl font-bold text-gray-900">Chapters</h2>
+          </CardHeader>
+          <CardContent>
+            <ChapterList
+              comicId={comic.id}
+              chapters={chapters}
+              showActions={false}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

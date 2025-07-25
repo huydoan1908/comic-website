@@ -1,0 +1,210 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
+import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { ArrowLeft, Upload } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+
+const comicSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  author: z.string().min(1, 'Author is required'),
+  genre: z.string().min(1, 'Genre is required'),
+});
+
+type ComicFormData = z.infer<typeof comicSchema>;
+
+export default function NewComicPage() {
+  const [loading, setLoading] = useState(false);
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ComicFormData>({
+    resolver: zodResolver(comicSchema),
+  });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCoverImage(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const onSubmit = async (data: ComicFormData) => {
+    if (!coverImage) {
+      alert('Please select a cover image');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Upload cover image
+      const formData = new FormData();
+      formData.append('files', coverImage);
+      formData.append('single', 'true');
+
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload cover image');
+      }
+
+      const { url: coverImageUrl } = await uploadResponse.json();
+
+      // Create comic
+      const comicResponse = await fetch('/api/comics', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          coverImageUrl,
+        }),
+      });
+
+      if (!comicResponse.ok) {
+        throw new Error('Failed to create comic');
+      }
+
+      const { id } = await comicResponse.json();
+      router.push(`/admin/comics/${id}`);
+    } catch (error) {
+      console.error('Error creating comic:', error);
+      alert('Failed to create comic. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <Link href="/admin" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Dashboard
+        </Link>
+        <h1 className="text-3xl font-bold text-gray-900">Add New Comic</h1>
+        <p className="text-gray-600 mt-2">Create a new comic series</p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Cover Image Upload */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <h3 className="text-lg font-semibold">Cover Image</h3>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {imagePreview ? (
+                    <div className="aspect-[3/4] relative rounded-lg overflow-hidden">
+                      <Image
+                        src={imagePreview}
+                        alt="Cover preview"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 300px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-[3/4] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                        <p className="mt-2 text-sm text-gray-600">Upload cover image</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    required
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Comic Details */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <h3 className="text-lg font-semibold">Comic Details</h3>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Input
+                  label="Title"
+                  {...register('title')}
+                  error={errors.title?.message}
+                  placeholder="Enter comic title"
+                />
+
+                <Textarea
+                  label="Description"
+                  {...register('description')}
+                  error={errors.description?.message}
+                  placeholder="Enter comic description"
+                  rows={4}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Input
+                    label="Author"
+                    {...register('author')}
+                    error={errors.author?.message}
+                    placeholder="Enter author name"
+                  />
+
+                  <Input
+                    label="Genre"
+                    {...register('genre')}
+                    error={errors.genre?.message}
+                    placeholder="e.g., Action, Romance, Comedy"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-4">
+                  <Link href="/admin">
+                    <Button variant="outline" type="button">
+                      Cancel
+                    </Button>
+                  </Link>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? 'Creating...' : 'Create Comic'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}

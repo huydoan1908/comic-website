@@ -1,0 +1,193 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowLeft, Plus, Edit, Eye, BookOpen } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/Card';
+import { ChapterList } from '@/components/ChapterList';
+import { Comic, Chapter } from '@/types';
+
+export default function ComicManagePage() {
+  const params = useParams();
+  const comicId = params.id as string;
+  
+  const [comic, setComic] = useState<Comic | null>(null);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const fetchComicData = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch comic details
+      const comicResponse = await fetch(`/api/comics/${comicId}`);
+      if (!comicResponse.ok) {
+        throw new Error('Failed to fetch comic');
+      }
+      const comicData = await comicResponse.json();
+      setComic(comicData);
+
+      // Fetch chapters
+      const chaptersResponse = await fetch(`/api/comics/${comicId}/chapters`);
+      if (!chaptersResponse.ok) {
+        throw new Error('Failed to fetch chapters');
+      }
+      const chaptersData = await chaptersResponse.json();
+      setChapters(chaptersData);
+    } catch (error) {
+      console.error('Error fetching comic data:', error);
+      alert('Failed to load comic data');
+    } finally {
+      setLoading(false);
+    }
+  }, [comicId]);
+
+  useEffect(() => {
+    fetchComicData();
+  }, [fetchComicData]);
+
+  const handleDeleteChapter = async (chapterId: string) => {
+    if (!confirm('Are you sure you want to delete this chapter? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeleting(chapterId);
+    try {
+      const response = await fetch(`/api/comics/${comicId}/chapters/${chapterId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete chapter');
+      }
+
+      // Refresh chapters list
+      await fetchComicData();
+    } catch (error) {
+      console.error('Error deleting chapter:', error);
+      alert('Failed to delete chapter');
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded mb-4 w-1/3"></div>
+          <div className="h-64 bg-gray-200 rounded mb-8"></div>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-20 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!comic) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Comic Not Found</h1>
+          <Link href="/admin">
+            <Button variant="outline">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Admin
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <Link href="/admin">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Admin
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900">Manage Comic</h1>
+        </div>
+        <div className="flex gap-2">
+          <Link href={`/comics/${comicId}`}>
+            <Button variant="outline">
+              <Eye className="w-4 h-4 mr-2" />
+              View Comic
+            </Button>
+          </Link>
+          <Link href={`/admin/comics/${comicId}/chapters/new`}>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Chapter
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Comic Info */}
+      <Card className="mb-8">
+        <CardContent className="p-6">
+          <div className="flex gap-6">
+            <div className="flex-shrink-0">
+              <Image
+                src={comic.coverImageUrl}
+                alt={comic.title}
+                width={200}
+                height={300}
+                className="rounded-lg object-cover"
+              />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{comic.title}</h2>
+              <p className="text-gray-600 mb-2">
+                <span className="font-medium">Author:</span> {comic.author}
+              </p>
+              <p className="text-gray-600 mb-2">
+                <span className="font-medium">Genre:</span> {comic.genre}
+              </p>
+              <p className="text-gray-700 mb-4">{comic.description}</p>
+              <div className="flex gap-2">
+                <Link href={`/admin/comics/${comicId}/edit`}>
+                  <Button variant="outline" size="sm">
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Comic
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Chapters Section */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <BookOpen className="w-5 h-5" />
+            Chapters ({chapters.length})
+          </h3>
+        </div>
+
+        <ChapterList
+          comicId={comicId}
+          chapters={chapters}
+          onDelete={handleDeleteChapter}
+          deleting={deleting}
+          showActions={true}
+        />
+      </div>
+    </div>
+  );
+}
