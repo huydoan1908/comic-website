@@ -7,13 +7,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Upload, X, Image as ImageIcon, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { useAuth } from '@/hooks/useAuth';
 import { chaptersService, comicsService } from '@/services/firebase';
 import { uploadMultipleToCloudinaryClient } from '@/lib/cloudinary-client';
+import { convertPDFToImages, convertPDFImagesToFiles, isPDFFile } from '@/lib/pdf-utils';
 import { Comic } from '@/types';
 
 const chapterSchema = z.object({
@@ -33,6 +34,7 @@ export default function NewChapterPage() {
   const [pageFiles, setPageFiles] = useState<File[]>([]);
   const [pagePreviews, setPagePreviews] = useState<string[]>([]);
   const [comic, setComic] = useState<Comic | null>(null);
+  const [pdfProcessing, setPdfProcessing] = useState(false);
 
   const {
     register,
@@ -67,23 +69,61 @@ export default function NewChapterPage() {
     );
   }
 
-  const handlePageFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePageFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    // Sort files by name before adding them
-    const sortedFiles = files.sort((a, b) => a.name.localeCompare(b.name));
-    console.log('sortedFiles:', sortedFiles);
-    setPageFiles(prev => [...prev, ...sortedFiles]);
+    // Separate PDF files from image files
+    const imageFiles = files.filter(file => !isPDFFile(file));
+    const pdfFiles = files.filter(file => isPDFFile(file));
 
-    // Create previews
-    sortedFiles.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPagePreviews(prev => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
-    });
+    // Handle image files (existing functionality)
+    if (imageFiles.length > 0) {
+      const sortedFiles = imageFiles.sort((a, b) => a.name.localeCompare(b.name));
+      console.log('sortedFiles:', sortedFiles);
+      setPageFiles(prev => [...prev, ...sortedFiles]);
+
+      // Create previews for images
+      sortedFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setPagePreviews(prev => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Handle PDF files
+    if (pdfFiles.length > 0) {
+      setPdfProcessing(true);
+      try {
+        for (const pdfFile of pdfFiles) {
+          console.log('Processing PDF:', pdfFile.name);
+          
+          // Convert PDF to images
+          const pdfImages = await convertPDFToImages(pdfFile, 0.9, 2);
+          
+          // Convert to File objects
+          const baseName = pdfFile.name.replace(/\.pdf$/i, '');
+          const imageFiles = convertPDFImagesToFiles(pdfImages, baseName);
+          
+          // Add to page files
+          setPageFiles(prev => [...prev, ...imageFiles]);
+          
+          // Add previews
+          const previews = pdfImages.map(img => img.dataUrl);
+          setPagePreviews(prev => [...prev, ...previews]);
+        }
+      } catch (error) {
+        console.error('Error processing PDF:', error);
+        alert('Failed to process PDF file. Please make sure it\'s a valid PDF and try again.');
+      } finally {
+        setPdfProcessing(false);
+      }
+    }
+
+    // Clear the input
+    e.target.value = '';
   };
 
   const removePage = (index: number) => {
@@ -184,32 +224,69 @@ export default function NewChapterPage() {
         <Card>
           <CardHeader>
             <h2 className="text-xl font-semibold">Chapter Pages</h2>
-            <p className="text-gray-600">Upload images for this chapter. Pages will be displayed in the order you upload them.</p>
+            <p className="text-gray-600">Upload images or PDF files for this chapter. Pages will be displayed in the order you upload them.</p>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload Pages *
-              </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-gray-400 transition-colors">
-                <div className="text-center">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <label htmlFor="pageFiles" className="cursor-pointer">
-                    <span className="text-lg font-medium text-gray-900">Click to upload pages</span>
-                    <p className="text-gray-600 mt-1">or drag and drop</p>
-                    <p className="text-xs text-gray-500 mt-2">PNG, JPG, GIF up to 10MB each</p>
-                  </label>
-                  <input
-                    id="pageFiles"
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handlePageFilesChange}
-                    className="hidden"
-                  />
+          <CardContent className="space-y-6">
+            {/* Upload Options */}
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Upload Individual Images
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
+                  <div className="text-center">
+                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <label htmlFor="imageFiles" className="cursor-pointer">
+                      <span className="text-sm font-medium text-gray-900">Upload Images</span>
+                      <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB each</p>
+                    </label>
+                    <input
+                      id="imageFiles"
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handlePageFilesChange}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* PDF Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Upload PDF File
+                </label>
+                <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 hover:border-blue-400 transition-colors">
+                  <div className="text-center">
+                    <FileText className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                    <label htmlFor="pdfFiles" className="cursor-pointer">
+                      <span className="text-sm font-medium text-gray-900">Upload PDF</span>
+                      <p className="text-xs text-gray-500 mt-1">PDF files will be split into pages</p>
+                    </label>
+                    <input
+                      id="pdfFiles"
+                      type="file"
+                      multiple
+                      accept=".pdf,application/pdf"
+                      onChange={handlePageFilesChange}
+                      className="hidden"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* PDF Processing Status */}
+            {pdfProcessing && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
+                  <span className="text-sm text-blue-800">Processing PDF file(s)...</span>
+                </div>
+              </div>
+            )}
 
             {/* Page Previews */}
             {pageFiles.length > 0 && (
@@ -262,9 +339,9 @@ export default function NewChapterPage() {
           </Link>
           <Button
             type="submit"
-            disabled={loading || pageFiles.length === 0}
+            disabled={loading || pdfProcessing || pageFiles.length === 0}
           >
-            {loading ? 'Creating Chapter...' : 'Create Chapter'}
+            {loading ? 'Creating Chapter...' : pdfProcessing ? 'Processing PDF...' : 'Create Chapter'}
           </Button>
         </div>
       </form>

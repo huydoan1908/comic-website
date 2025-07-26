@@ -119,7 +119,7 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
               <Link href={`/comics/${comicId}`}>
                 <Button variant="secondary" size="sm">
                   <Home className="w-4 h-4 mr-1" />
-                  Back to Comic
+                  Back
                 </Button>
               </Link>
             )}
@@ -164,20 +164,18 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
       )}
 
       {/* Bottom Controls - Fixed with all features */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/90 to-black/70 p-4 border-t border-gray-700/50">
-        <div className="flex items-center justify-center text-white mb-2">
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/90 to-black/70 p-2 md:p-4 border-t border-gray-700/50">
+        <div className="flex items-center justify-center text-white">
           <div className="flex items-center space-x-3">
             {prevChapterUrl ? (
               <Link href={prevChapterUrl}>
                 <Button variant="secondary" size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-1" />
-                  Prev
+                  <ChevronLeft className="w-4 h-4 mr-1" />
                 </Button>
               </Link>
             ) : (
               <Button variant="secondary" size="sm" disabled>
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Prev
+                <ChevronLeft className="w-4 h-4 mr-1" />
               </Button>
             )}
             <Button variant="secondary" size="sm" onClick={() => setViewMode(viewMode === "single" ? "continuous" : "single")} title={`Switch to ${viewMode === "single" ? "continuous" : "single"} view`}>
@@ -192,7 +190,7 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
               </div>
             ) : (
               <div className="text-center">
-                <div>Chapter {currentChapter.chapterNumber}</div>
+                <div className="text-xs md:text-lg">Chapter {currentChapter.chapterNumber}</div>
                 <div className="text-xs opacity-75">{currentChapter.pageImageUrls.length} Pages</div>
               </div>
             )}
@@ -205,14 +203,12 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
             {nextChapterUrl ? (
               <Link href={nextChapterUrl}>
                 <Button variant="secondary" size="sm">
-                  Next
-                  <ArrowRight className="w-4 h-4 ml-1" />
+                  <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             ) : (
               <Button variant="secondary" size="sm" disabled>
-                Next
-                <ArrowRight className="w-4 h-4 ml-1" />
+                <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             )}
           </div>
