@@ -48,8 +48,11 @@ export default function HomePage() {
       const data = await comicsService.getAll();
       setComics(data);
       
-      // Extract unique genres
-      const uniqueGenres = [...new Set(data.map((comic: Comic) => comic.genre))] as string[];
+      // Extract unique genres - split comma-separated genres and flatten
+      const allGenres = data.flatMap((comic: Comic) => 
+        comic.genre ? comic.genre.split(',').map(g => g.trim()) : []
+      );
+      const uniqueGenres = [...new Set(allGenres)].filter(genre => genre.length > 0);
       setGenres(uniqueGenres);
     } catch (error) {
       console.error('Error fetching comics:', error);
@@ -72,7 +75,11 @@ export default function HomePage() {
 
     // Filter by genre
     if (selectedGenre) {
-      filtered = filtered.filter(comic => comic.genre === selectedGenre);
+      filtered = filtered.filter(comic => {
+        if (!comic.genre) return false;
+        const comicGenres = comic.genre.split(',').map(g => g.trim());
+        return comicGenres.includes(selectedGenre);
+      });
     }
 
     setFilteredComics(filtered);

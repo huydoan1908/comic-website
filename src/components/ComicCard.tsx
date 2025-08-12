@@ -26,9 +26,16 @@ export function ComicCard({ comic }: ComicCardProps) {
           </h3>
           <p className="text-sm text-gray-600 mb-2">by {comic.author}</p>
           <div className="flex items-center justify-between">
-            <span className="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-              {comic.genre}
-            </span>
+            <div className="flex flex-wrap gap-1">
+              {comic.genre?.split(',').map((genre, index) => (
+                <span
+                  key={index}
+                  className="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded"
+                >
+                  {genre.trim()}
+                </span>
+              ))}
+            </div>
           </div>
           <p className="text-sm text-gray-500 mt-2 line-clamp-2">
             {comic.description}
