@@ -1,23 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Comic } from '@/types';
-import { timestampToDate, formatTimestamp } from '@/lib/utils';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { comicsService } from '@/services/firebase';
-import { useAuth } from '@/hooks/useAuth';
-import { 
-  BookOpen, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  BarChart3,
-  Users,
-  Eye
-} from 'lucide-react';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Comic } from "@/types";
+import { timestampToDate, formatTimestamp } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { comicsService } from "@/services/firebase";
+import { useAuth } from "@/hooks/useAuth";
+import { BookOpen, Plus, Edit, Trash2, BarChart3, Users, Eye } from "lucide-react";
 
 export default function AdminDashboard() {
   const [comics, setComics] = useState<Comic[]>([]);
@@ -47,7 +39,7 @@ export default function AdminDashboard() {
         }).length,
       });
     } catch (error) {
-      console.error('Error fetching comics:', error);
+      console.error("Error fetching comics:", error);
     } finally {
       setLoading(false);
     }
@@ -55,17 +47,17 @@ export default function AdminDashboard() {
 
   const handleDeleteComic = async (comicId: string) => {
     if (!isAdmin) {
-      alert('You must be an admin to delete comics');
+      alert("You must be an admin to delete comics");
       return;
     }
 
-    if (confirm('Are you sure you want to delete this comic? This action cannot be undone.')) {
+    if (confirm("Are you sure you want to delete this comic? This action cannot be undone.")) {
       try {
         await comicsService.delete(comicId);
-        setComics(comics.filter(comic => comic.id !== comicId));
+        setComics(comics.filter((comic) => comic.id !== comicId));
       } catch (error) {
-        console.error('Error deleting comic:', error);
-        alert('Failed to delete comic');
+        console.error("Error deleting comic:", error);
+        alert("Failed to delete comic");
       }
     }
   };
@@ -74,14 +66,14 @@ export default function AdminDashboard() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start md:flex-row flex-col gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
             <p className="text-gray-600 mt-2">Manage your comics and chapters</p>
           </div>
           <div className="flex gap-3">
             <Link href="/admin/comics/new">
-              <Button>
+              <Button className="text-xs">
                 <Plus className="w-4 h-4 mr-2" />
                 New Comic
               </Button>
@@ -115,28 +107,14 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <Users className="h-8 w-8 text-purple-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Users</p>
-                <p className="text-2xl font-bold text-gray-900">-</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Comics List */}
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center md:flex-row flex-col">
             <h2 className="text-xl font-semibold text-gray-900">Comics</h2>
-            <div className="text-sm text-gray-600">
-              Click &ldquo;Manage&rdquo; to add and edit chapters
-            </div>
+            <div className="text-sm text-gray-600">Click &ldquo;Manage&rdquo; to add and edit chapters</div>
           </div>
         </CardHeader>
         <CardContent>
@@ -171,18 +149,10 @@ export default function AdminDashboard() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">
-                      Comic
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
-                      Author
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-                      Genre
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
-                      Created
-                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Comic</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Author</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Genre</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Created</th>
                     <th className="relative px-6 py-3 w-48">
                       <span className="sr-only">Actions</span>
                     </th>
@@ -194,38 +164,21 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-16 w-12 relative">
-                            <Image
-                              className="h-16 w-12 object-cover rounded"
-                              src={comic.coverImageUrl}
-                              alt={comic.title}
-                              fill
-                              sizes="48px"
-                            />
+                            <Image className="h-16 w-12 object-cover rounded" src={comic.coverImageUrl} alt={comic.title} fill sizes="48px" />
                           </div>
                           <div className="ml-4 min-w-0 flex-1">
-                            <div className="text-sm font-medium text-gray-900 truncate">
-                              {comic.title}
-                            </div>
-                            <div className="text-sm text-gray-500 truncate">
-                              {comic.description}
-                            </div>
+                            <div className="text-sm font-medium text-gray-900 truncate">{comic.title}</div>
                             <div className="sm:hidden text-xs text-gray-500 mt-1">
                               {comic.author} • {comic.genre}
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden sm:table-cell">
-                        {comic.author}
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden sm:table-cell">{comic.author}</td>
                       <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {comic.genre}
-                        </span>
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{comic.genre}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
-                        {formatTimestamp(comic.createdAt)}
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">{formatTimestamp(comic.createdAt)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end space-x-1">
                           <Link href={`/comics/${comic.id}`}>
@@ -240,12 +193,7 @@ export default function AdminDashboard() {
                               <span className="hidden md:inline ml-1">Manage</span>
                             </Button>
                           </Link>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => handleDeleteComic(comic.id)}
-                            title="Delete Comic"
-                          >
+                          <Button variant="danger" size="sm" onClick={() => handleDeleteComic(comic.id)} title="Delete Comic">
                             <Trash2 className="w-4 h-4" />
                             <span className="hidden md:inline ml-1">Delete</span>
                           </Button>

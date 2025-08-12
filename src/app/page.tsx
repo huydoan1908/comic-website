@@ -6,8 +6,11 @@ import { timestampToDate } from '@/lib/utils';
 import { ComicGrid } from '@/components/ComicGrid';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { Pagination } from '@/components/ui/Pagination';
+import { ItemsPerPageSelector } from '@/components/ui/ItemsPerPageSelector';
 import { comicsService } from '@/services/firebase';
-import { Search, Filter, TrendingUp, Star, Clock } from 'lucide-react';
+import { usePagination } from '@/hooks/usePagination';
+import { Search, Filter, Clock } from 'lucide-react';
 
 export default function HomePage() {
   const [comics, setComics] = useState<Comic[]>([]);
@@ -16,6 +19,24 @@ export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
   const [genres, setGenres] = useState<string[]>([]);
+
+  // Pagination configuration
+  const ITEMS_PER_PAGE = 10;
+  
+  // Use pagination hook for main comics list
+  const {
+    currentPage,
+    totalPages,
+    currentItems: paginatedComics,
+    totalItems,
+    goToPage,
+    itemsPerPage,
+    setItemsPerPage
+  } = usePagination({
+    items: filteredComics,
+    itemsPerPage: ITEMS_PER_PAGE,
+    initialPage: 1
+  });
 
   useEffect(() => {
     fetchComics();
@@ -55,6 +76,7 @@ export default function HomePage() {
     }
 
     setFilteredComics(filtered);
+    // Reset to first page when filters change
   }, [comics, searchTerm, selectedGenre]);
 
   useEffect(() => {
@@ -70,18 +92,10 @@ export default function HomePage() {
     setSelectedGenre(genre === selectedGenre ? '' : genre);
   };
 
-  const getFeaturedComics = () => {
-    return comics.slice(0, 6); // Get first 6 comics as featured
-  };
-
   const getRecentComics = () => {
     return comics
       .sort((a, b) => timestampToDate(b.createdAt).getTime() - timestampToDate(a.createdAt).getTime())
       .slice(0, 8);
-  };
-
-  const getPopularComics = () => {
-    return comics.slice(0, 8); // For now, just return first 8 as "popular"
   };
 
   return (
@@ -102,16 +116,15 @@ export default function HomePage() {
             <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <Input
                     type="text"
                     placeholder="Search comics, authors, or descriptions..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 bg-white text-gray-900"
+                    className="w-full h-full bg-white text-gray-900"
                   />
                 </div>
-                <Button type="submit" size="lg" variant="secondary">
+                <Button type="submit" size="md" variant="secondary">
                   <Search className="w-5 h-5 mr-2" />
                   Search
                 </Button>
@@ -136,17 +149,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Featured Comics */}
-      {!loading && comics.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center mb-8">
-            <Star className="w-6 h-6 text-yellow-500 mr-2" />
-            <h2 className="text-3xl font-bold text-gray-900">Featured Comics</h2>
-          </div>
-          <ComicGrid comics={getFeaturedComics()} />
-        </section>
-      )}
 
       {/* Genre Filters and Search Results */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -181,16 +183,37 @@ export default function HomePage() {
 
         {/* Search Results or All Comics */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            {searchTerm ? (
-              <>Search Results for &ldquo;{searchTerm}&rdquo; ({filteredComics.length})</>
-            ) : selectedGenre ? (
-              <>{selectedGenre} Comics ({filteredComics.length})</>
-            ) : (
-              <>All Comics ({filteredComics.length})</>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {searchTerm ? (
+                <>Search Results for &ldquo;{searchTerm}&rdquo; ({totalItems})</>
+              ) : selectedGenre ? (
+                <>{selectedGenre} Comics ({totalItems})</>
+              ) : (
+                <>All Comics ({totalItems})</>
+              )}
+            </h2>
+            
+            {totalItems > 0 && (
+              <ItemsPerPageSelector
+                itemsPerPage={itemsPerPage}
+                onItemsPerPageChange={setItemsPerPage}
+              />
             )}
-          </h2>
-          <ComicGrid comics={filteredComics} loading={loading} />
+          </div>
+          
+          <ComicGrid comics={paginatedComics} loading={loading} />
+          
+          {/* Pagination */}
+          {!loading && totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={goToPage}
+              itemsPerPage={itemsPerPage}
+              totalItems={totalItems}
+            />
+          )}
         </div>
       </section>
 
@@ -202,17 +225,6 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-gray-900">Recently Added</h2>
           </div>
           <ComicGrid comics={getRecentComics()} />
-        </section>
-      )}
-
-      {/* Popular Comics */}
-      {!loading && !searchTerm && !selectedGenre && comics.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center mb-8">
-            <TrendingUp className="w-6 h-6 text-green-500 mr-2" />
-            <h2 className="text-3xl font-bold text-gray-900">Popular Comics</h2>
-          </div>
-          <ComicGrid comics={getPopularComics()} />
         </section>
       )}
 

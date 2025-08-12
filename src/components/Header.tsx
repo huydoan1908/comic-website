@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from './ui/Button';
-import { BookOpen, User, Search } from 'lucide-react';
+import { BookOpen, User } from 'lucide-react';
 
 export function Header() {
   const { user, isAdmin, logout } = useAuth();
@@ -17,22 +17,6 @@ export function Header() {
             <BookOpen className="h-8 w-8 text-blue-600" />
             <span className="text-xl font-bold text-gray-900">ComicHub</span>
           </Link>
-
-          {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link 
-              href="/" 
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Home
-            </Link>
-            <Link 
-              href="/browse" 
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Browse
-            </Link>
-          </nav>
 
           {/* User actions */}
           <div className="flex items-center space-x-4">

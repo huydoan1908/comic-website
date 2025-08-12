@@ -22,7 +22,7 @@ export default function AdminLayout({
   useEffect(() => {
     if (!loading && mounted) {
       // Allow access to login page even when not authenticated
-      if (pathname === '/admin/login') {
+      if (pathname === '/admin/login' || pathname === '/admin/setup') {
         return;
       }
       

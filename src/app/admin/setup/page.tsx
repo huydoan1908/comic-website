@@ -10,21 +10,21 @@ const sampleComics = [
     description: "An epic tale of heroes and villains in a magical world filled with magic, mystery, and ancient prophecies.",
     author: "Jane Smith",
     genre: "Fantasy",
-    coverImageUrl: "https://via.placeholder.com/300x400/FF6B6B/FFFFFF?text=Adventure+Begins",
+    coverImageUrl: "https://placehold.co/300x400/FF6B6B/FFFFFF/JPG?text=Adventure+Begins",
   },
   {
     title: "Space Warriors",
     description: "Galactic battles and cosmic adventures await as humanity explores the far reaches of space.",
     author: "Mike Johnson", 
     genre: "Sci-Fi",
-    coverImageUrl: "https://via.placeholder.com/300x400/4ECDC4/FFFFFF?text=Space+Warriors",
+    coverImageUrl: "https://placehold.co/300x400/4ECDC4/FFFFFF/JPG?text=Space+Warriors",
   },
   {
     title: "High School Heroes",
     description: "Teenage superheroes dealing with both villains and homework in this coming-of-age story.",
     author: "Sarah Chen",
     genre: "Superhero", 
-    coverImageUrl: "https://via.placeholder.com/300x400/45B7D1/FFFFFF?text=High+School+Heroes",
+    coverImageUrl: "https://placehold.co/300x400/45B7D1/FFFFFF/JPG?text=High+School+Heroes",
   }
 ];
 
@@ -33,21 +33,21 @@ const sampleChapters = [
     chapterNumber: 1,
     title: "The Journey Starts",
     pageImageUrls: [
-      "https://via.placeholder.com/800x1200/FF6B6B/FFFFFF?text=Page+1",
-      "https://via.placeholder.com/800x1200/FF6B6B/FFFFFF?text=Page+2", 
-      "https://via.placeholder.com/800x1200/FF6B6B/FFFFFF?text=Page+3",
-      "https://via.placeholder.com/800x1200/FF6B6B/FFFFFF?text=Page+4",
-      "https://via.placeholder.com/800x1200/FF6B6B/FFFFFF?text=Page+5"
+      "https://placehold.co/800x1200/FF6B6B/FFFFFF/JPG?text=Page+1",
+      "https://placehold.co/800x1200/FF6B6B/FFFFFF/JPG?text=Page+2", 
+      "https://placehold.co/800x1200/FF6B6B/FFFFFF/JPG?text=Page+3",
+      "https://placehold.co/800x1200/FF6B6B/FFFFFF/JPG?text=Page+4",
+      "https://placehold.co/800x1200/FF6B6B/FFFFFF/JPG?text=Page+5"
     ]
   },
   {
     chapterNumber: 2,
     title: "First Challenge", 
     pageImageUrls: [
-      "https://via.placeholder.com/800x1200/FF6B6B/FFFFFF?text=Ch2+Page+1",
-      "https://via.placeholder.com/800x1200/FF6B6B/FFFFFF?text=Ch2+Page+2",
-      "https://via.placeholder.com/800x1200/FF6B6B/FFFFFF?text=Ch2+Page+3",
-      "https://via.placeholder.com/800x1200/FF6B6B/FFFFFF?text=Ch2+Page+4"
+      "https://placehold.co/800x1200/FF6B6B/FFFFFF/JPG?text=Ch2+Page+1",
+      "https://placehold.co/800x1200/FF6B6B/FFFFFF/JPG?text=Ch2+Page+2",
+      "https://placehold.co/800x1200/FF6B6B/FFFFFF/JPG?text=Ch2+Page+3",
+      "https://placehold.co/800x1200/FF6B6B/FFFFFF/JPG?text=Ch2+Page+4"
     ]
   }
 ];
