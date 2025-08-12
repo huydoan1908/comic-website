@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Upload, X, Move } from 'lucide-react';
+import { ArrowLeft, Upload, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
@@ -15,7 +15,6 @@ import { Chapter, Comic } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { chaptersService, comicsService } from '@/services/firebase';
 import { uploadMultipleToCloudinaryClient } from '@/lib/cloudinary-client';
-import { da } from 'zod/locales';
 
 const chapterSchema = z.object({
   chapterNumber: z.number().min(1, 'Chapter number must be at least 1'),
@@ -287,7 +286,7 @@ export default function EditChapterPage() {
                         className="bg-blue-500 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-30"
                         title="Move up"
                       >
-                        <Move className="w-3 h-3" />
+                        <ChevronLeft className="w-3 h-3" />
                       </button>
                       <button
                         type="button"
@@ -296,7 +295,7 @@ export default function EditChapterPage() {
                         className="bg-blue-500 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-30"
                         title="Move down"
                       >
-                        <Move className="w-3 h-3 rotate-180" />
+                        <ChevronRight className="w-3 h-3" />
                       </button>
                       <button
                         type="button"

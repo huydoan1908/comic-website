@@ -15,7 +15,7 @@ import { comicsService, chaptersService } from '@/services/firebase';
 export default function ComicManagePage() {
   const params = useParams();
   const comicId = params.id as string;
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   
   const [comic, setComic] = useState<Comic | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);

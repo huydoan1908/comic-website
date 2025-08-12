@@ -1,25 +1,57 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Comic } from "@/types";
-import { timestampToDate, formatTimestamp } from "@/lib/utils";
+import { timestampToDate } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Pagination } from "@/components/ui/Pagination";
+import { ItemsPerPageSelector } from "@/components/ui/ItemsPerPageSelector";
 import { comicsService } from "@/services/firebase";
 import { useAuth } from "@/hooks/useAuth";
-import { BookOpen, Plus, Edit, Trash2, BarChart3, Users, Eye } from "lucide-react";
+import { usePagination } from "@/hooks/usePagination";
+import { BookOpen, Plus, Edit, Trash2, BarChart3, Eye, Search } from "lucide-react";
 
 export default function AdminDashboard() {
   const [comics, setComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [stats, setStats] = useState({
     totalComics: 0,
     totalChapters: 0,
     recentComics: 0,
   });
   const { isAdmin } = useAuth();
+
+  // Filter comics based on search term
+  const filteredComics = useMemo(() => {
+    if (!searchTerm.trim()) return comics;
+    
+    const term = searchTerm.toLowerCase().trim();
+    return comics.filter((comic) => 
+      comic.title.toLowerCase().includes(term) ||
+      comic.author.toLowerCase().includes(term) ||
+      comic.genre.toLowerCase().includes(term) ||
+      comic.description?.toLowerCase().includes(term)
+    );
+  }, [comics, searchTerm]);
+
+  // Pagination hook
+  const {
+    currentPage,
+    totalPages,
+    currentItems: paginatedComics,
+    totalItems,
+    goToPage,
+    itemsPerPage,
+    setItemsPerPage
+  } = usePagination({
+    items: filteredComics,
+    itemsPerPage: 10
+  });
 
   useEffect(() => {
     fetchComics();
@@ -109,6 +141,49 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
+      {/* Search and Filters */}
+      <div className="mb-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+              <div className="flex-1 max-w-md">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    type="text"
+                    placeholder="Search comics by title, author, genre..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <ItemsPerPageSelector
+                itemsPerPage={itemsPerPage}
+                onItemsPerPageChange={setItemsPerPage}
+                options={[5, 10, 15, 20, 25]}
+              />
+            </div>
+            
+            {searchTerm && (
+              <div className="mt-4 text-sm text-gray-600">
+                Showing {totalItems} of {comics.length} comics
+                {totalItems !== comics.length && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSearchTerm("")}
+                    className="ml-2 text-xs"
+                  >
+                    Clear search
+                  </Button>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Comics List */}
       <Card>
         <CardHeader>
@@ -130,80 +205,94 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
-          ) : comics.length === 0 ? (
+          ) : filteredComics.length === 0 ? (
             <div className="text-center py-8">
-              <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No comics</h3>
-              <p className="mt-1 text-sm text-gray-500">Get started by creating a new comic.</p>
-              <div className="mt-6">
-                <Link href="/admin/comics/new">
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Comic
-                  </Button>
-                </Link>
-              </div>
+              {searchTerm ? (
+                <>
+                  <Search className="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">No comics found</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    No comics match your search for &quot;{searchTerm}&quot;
+                  </p>
+                  <div className="mt-6">
+                    <Button variant="outline" onClick={() => setSearchTerm("")}>
+                      Clear search
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">No comics</h3>
+                  <p className="mt-1 text-sm text-gray-500">Get started by creating a new comic.</p>
+                  <div className="mt-6">
+                    <Link href="/admin/comics/new">
+                      <Button>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Comic
+                      </Button>
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Comic</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Author</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Genre</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Created</th>
-                    <th className="relative px-6 py-3 w-48">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {comics.map((comic) => (
-                    <tr key={comic.id}>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-16 w-12 relative">
-                            <Image className="h-16 w-12 object-cover rounded" src={comic.coverImageUrl} alt={comic.title} fill sizes="48px" />
-                          </div>
-                          <div className="ml-4 min-w-0 flex-1">
-                            <div className="text-sm font-medium text-gray-900 truncate">{comic.title}</div>
-                            <div className="sm:hidden text-xs text-gray-500 mt-1">
-                              {comic.author} • {comic.genre}
+            <>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {paginatedComics.map((comic) => (
+                      <tr key={comic.id}>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-16 w-12 relative">
+                              <Image className="h-16 w-12 object-cover rounded" src={comic.coverImageUrl} alt={comic.title} fill sizes="48px" />
+                            </div>
+                            <div className="ml-4 min-w-0 flex-1 max-w-xs">
+                              <div className="text-sm font-medium text-gray-900 truncate">{comic.title}</div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {comic.author} • {comic.genre}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden sm:table-cell">{comic.author}</td>
-                      <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{comic.genre}</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">{formatTimestamp(comic.createdAt)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-1">
-                          <Link href={`/comics/${comic.id}`}>
-                            <Button variant="outline" size="sm" title="View Comic">
-                              <Eye className="w-4 h-4" />
-                              <span className="hidden md:inline ml-1">View</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex items-center justify-end space-x-1">
+                            <Link href={`/comics/${comic.id}`}>
+                              <Button variant="outline" size="sm" title="View Comic">
+                                <Eye className="w-4 h-4" />
+                                <span className="hidden md:inline ml-1">View</span>
+                              </Button>
+                            </Link>
+                            <Link href={`/admin/comics/${comic.id}`}>
+                              <Button variant="outline" size="sm" title="Manage Chapters">
+                                <Edit className="w-4 h-4" />
+                                <span className="hidden md:inline ml-1">Manage</span>
+                              </Button>
+                            </Link>
+                            <Button variant="danger" size="sm" onClick={() => handleDeleteComic(comic.id)} title="Delete Comic">
+                              <Trash2 className="w-4 h-4" />
+                              <span className="hidden md:inline ml-1">Delete</span>
                             </Button>
-                          </Link>
-                          <Link href={`/admin/comics/${comic.id}`}>
-                            <Button variant="outline" size="sm" title="Manage Chapters">
-                              <Edit className="w-4 h-4" />
-                              <span className="hidden md:inline ml-1">Manage</span>
-                            </Button>
-                          </Link>
-                          <Button variant="danger" size="sm" onClick={() => handleDeleteComic(comic.id)} title="Delete Comic">
-                            <Trash2 className="w-4 h-4" />
-                            <span className="hidden md:inline ml-1">Delete</span>
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={goToPage}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={totalItems}
+                />
+              )}
+            </>
           )}
         </CardContent>
       </Card>

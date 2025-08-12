@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Chapter } from "@/types";
 import { Button } from "./ui/Button";
-import { ChevronLeft, ChevronRight, ArrowLeft, ArrowRight, Menu, X, BookOpen, Scroll, Home, ChevronUp } from "lucide-react";
+import { ChevronLeft, ChevronRight, Menu, X, BookOpen, Scroll, Home, ChevronUp } from "lucide-react";
 
 interface ComicReaderProps {
   chapters: Chapter[];
