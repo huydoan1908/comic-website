@@ -36,8 +36,8 @@ export default function AdminLoginPage() {
       <div className="max-w-md w-full">
         <Card>
           <CardHeader className="text-center">
-            <div className="mx-auto h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <Lock className="h-6 w-6 text-blue-600" />
+            <div className="mx-auto h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center">
+              <Lock className="h-6 w-6 text-gray-700" />
             </div>
             <h2 className="mt-4 text-2xl font-bold text-gray-900">
               Admin Login

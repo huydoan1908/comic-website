@@ -119,7 +119,7 @@ export default function AdminDashboard() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <BookOpen className="h-8 w-8 text-blue-600" />
+              <BookOpen className="h-8 w-8 text-gray-700" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Comics</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.totalComics}</p>

@@ -30,7 +30,7 @@ export function ComicCard({ comic }: ComicCardProps) {
               {comic.genre?.split(',').map((genre, index) => (
                 <span
                   key={index}
-                  className="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded"
+                  className="inline-block bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded"
                 >
                   {genre.trim()}
                 </span>

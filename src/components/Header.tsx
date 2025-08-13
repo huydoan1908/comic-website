@@ -9,12 +9,12 @@ export function Header() {
   const { user, isAdmin, logout } = useAuth();
 
   return (
-    <header className="bg-white shadow-sm border-b">
+    <header className="fixed top-0 left-0 right-0 bg-white shadow-sm border-b z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <BookOpen className="h-8 w-8 text-blue-600" />
+            <BookOpen className="h-8 w-8 text-gray-700" />
             <span className="text-xl font-bold text-gray-900">ComicHub</span>
           </Link>
 

@@ -283,7 +283,7 @@ export default function EditChapterPage() {
                         type="button"
                         onClick={() => moveExistingPage(index, index - 1)}
                         disabled={index === 0}
-                        className="bg-blue-500 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-30"
+                        className="bg-gray-700 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-30"
                         title="Move up"
                       >
                         <ChevronLeft className="w-3 h-3" />
@@ -292,7 +292,7 @@ export default function EditChapterPage() {
                         type="button"
                         onClick={() => moveExistingPage(index, index + 1)}
                         disabled={index === existingPages.length - 1}
-                        className="bg-blue-500 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-30"
+                        className="bg-gray-700 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-30"
                         title="Move down"
                       >
                         <ChevronRight className="w-3 h-3" />

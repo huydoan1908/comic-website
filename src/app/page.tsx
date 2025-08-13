@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Comic } from '@/types';
 import { timestampToDate } from '@/lib/utils';
 import { ComicGrid } from '@/components/ComicGrid';
+import { ComicCarousel } from '@/components/ComicCarousel';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Pagination } from '@/components/ui/Pagination';
@@ -105,53 +106,61 @@ export default function HomePage() {
       .slice(0, 8);
   };
 
+  const getLatestComics = () => {
+    return comics
+      .sort((a, b) => timestampToDate(b.createdAt).getTime() - timestampToDate(a.createdAt).getTime())
+      .slice(0, 6);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Welcome to ComicHub
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-              Discover amazing comics and immerse yourself in incredible stories. 
-              Read your favorites anytime, anywhere.
-            </p>
-            
-            {/* Search Form */}
-            <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Input
-                    type="text"
-                    placeholder="Search comics, authors, or descriptions..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full h-full bg-white text-gray-900"
-                  />
-                </div>
-                <Button type="submit" size="md" variant="secondary">
-                  <Search className="w-5 h-5 mr-2" />
-                  Search
-                </Button>
-              </div>
-            </form>
+      {/* Carousel Hero Section */}
+      <ComicCarousel comics={getLatestComics()} />
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-3xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold">{comics.length}</div>
-                <div className="text-sm opacity-75">Comics Available</div>
+      {/* Search Section */}
+      <section className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Discover Amazing Comics
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Search through our extensive collection of comics and find your next favorite story.
+            </p>
+          </div>
+          
+          {/* Search Form */}
+          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Input
+                  type="text"
+                  placeholder="Search comics, authors, or descriptions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full h-full"
+                />
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">{genres.length}</div>
-                <div className="text-sm opacity-75">Genres</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">24/7</div>
-                <div className="text-sm opacity-75">Available</div>
-              </div>
+              <Button type="submit" size="md" variant="primary">
+                <Search className="w-5 h-5 mr-2" />
+                Search
+              </Button>
+            </div>
+          </form>
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-3xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-gray-900">{comics.length}</div>
+              <div className="text-sm text-gray-600">Comics Available</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-gray-900">{genres.length}</div>
+              <div className="text-sm text-gray-600">Genres</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-gray-900">24/7</div>
+              <div className="text-sm text-gray-600">Available</div>
             </div>
           </div>
         </div>
@@ -228,7 +237,7 @@ export default function HomePage() {
       {!loading && !searchTerm && !selectedGenre && comics.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-white">
           <div className="flex items-center mb-8">
-            <Clock className="w-6 h-6 text-blue-500 mr-2" />
+            <Clock className="w-6 h-6 text-gray-600 mr-2" />
             <h2 className="text-3xl font-bold text-gray-900">Recently Added</h2>
           </div>
           <ComicGrid comics={getRecentComics()} />

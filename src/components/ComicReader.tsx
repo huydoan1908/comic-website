@@ -241,7 +241,7 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
             </div>
             <div className="overflow-y-auto max-h-96">
               {chapters.map((chapter, index) => (
-                <Link key={chapter.id} href={getChapterUrl(index)} className={`block w-full text-left p-4 hover:bg-gray-50 border-b transition-colors ${index === currentChapterIndex ? "bg-blue-50 border-blue-200" : ""}`}>
+                <Link key={chapter.id} href={getChapterUrl(index)} className={`block w-full text-left p-4 hover:bg-gray-50 border-b transition-colors ${index === currentChapterIndex ? "bg-gray-50 border-gray-200" : ""}`}>
                   <div className="font-medium">Chapter {chapter.chapterNumber}</div>
                   {chapter.title && <div className="text-sm text-gray-600">{chapter.title}</div>}
                   <div className="text-xs text-gray-500">{chapter.pageImageUrls.length} pages</div>

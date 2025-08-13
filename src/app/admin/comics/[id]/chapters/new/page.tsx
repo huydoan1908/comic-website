@@ -258,9 +258,9 @@ export default function NewChapterPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Upload PDF File
                 </label>
-                <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 hover:border-blue-400 transition-colors">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
                   <div className="text-center">
-                    <FileText className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                    <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                     <label htmlFor="pdfFiles" className="cursor-pointer">
                       <span className="text-sm font-medium text-gray-900">Upload PDF</span>
                       <p className="text-xs text-gray-500 mt-1">PDF files will be split into pages</p>
@@ -280,10 +280,10 @@ export default function NewChapterPage() {
 
             {/* PDF Processing Status */}
             {pdfProcessing && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
-                  <span className="text-sm text-blue-800">Processing PDF file(s)...</span>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-3"></div>
+                  <span className="text-sm text-gray-800">Processing PDF file(s)...</span>
                 </div>
               </div>
             )}

@@ -345,9 +345,9 @@ export default function SetupPage() {
           </div>
         )}
 
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-blue-800 font-semibold mb-2">Next Steps:</h3>
-          <ol className="list-decimal list-inside text-blue-700 space-y-1">
+        <div className="mt-8 bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 className="text-gray-800 font-semibold mb-2">Next Steps:</h3>
+          <ol className="list-decimal list-inside text-gray-700 space-y-1">
             <li>Run the setup above to create sample data</li>
             <li>Go to Firebase Console → Authentication</li>
             <li>Create a new user account</li>
