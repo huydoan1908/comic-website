@@ -75,30 +75,62 @@ export default function ComicDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Comic Details */}
-        <div className="flex flex-col lg:flex-row gap-8 mb-8">
-          {/* Cover Image */}
-          <div className="lg:w-1/3">
-            <div className="aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg">
-              <Image
-                src={comic.coverImageUrl}
-                alt={comic.title}
-                fill
-                className="object-cover"
-                priority
-              />
+    <div className="min-h-screen bg-gray-50">
+      {/* Banner Image */}
+      {comic.bannerImageUrl && (
+        <div className="relative w-full max-w-[1280px] aspect-1280/600 mx-auto overflow-hidden">
+          <Image
+            src={comic.bannerImageUrl}
+            alt={`${comic.title} banner`}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black opacity-20"></div>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-8">
+            <div className="max-w-7xl mx-auto">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
+                {comic.title}
+              </h1>
+              <p className="text-white/90 text-lg max-w-2xl">
+                {comic.description}
+              </p>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Comic Info */}
-          <div className="lg:w-2/3">
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  {comic.title}
-                </h1>
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Comic Details */}
+          <div className="flex flex-col lg:flex-row gap-8 mb-8">
+            {/* Cover Image */}
+            <div className="lg:w-1/3">
+              <div className="aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg">
+                <Image
+                  src={comic.coverImageUrl}
+                  alt={comic.title}
+                  fill
+                  className="object-cover"
+                  priority={!comic.bannerImageUrl}
+                />
+              </div>
+            </div>
+
+            {/* Comic Info */}
+            <div className="lg:w-2/3">
+              <div className="space-y-6">
+                {/* Only show title and description here if no banner */}
+                {!comic.bannerImageUrl && (
+                  <div>
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                      {comic.title}
+                    </h1>
+                    <p className="text-gray-700 text-lg leading-relaxed mb-6">
+                      {comic.description}
+                    </p>
+                  </div>
+                )}
                 
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6">
                   <div className="flex items-center">
@@ -119,39 +151,45 @@ export default function ComicDetailPage() {
                   </div>
                 </div>
 
-                <p className="text-gray-700 text-lg leading-relaxed">
-                  {comic.description}
-                </p>
-              </div>
+                {/* Show description here if banner exists */}
+                {comic.bannerImageUrl && (
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-3">About this Comic</h2>
+                    <p className="text-gray-700 text-lg leading-relaxed">
+                      {comic.description}
+                    </p>
+                  </div>
+                )}
 
-              {/* Start Reading Button */}
-              {chapters.length > 0 && (
-                <div>
-                  <Link href={`/read/${comic.id}/${chapters[0].id}`}>
-                    <Button size="lg" className="w-full sm:w-auto">
-                      <BookOpen className="w-5 h-5 mr-2" />
-                      Start Reading
-                    </Button>
-                  </Link>
-                </div>
-              )}
+                {/* Start Reading Button */}
+                {chapters.length > 0 && (
+                  <div>
+                    <Link href={`/read/${comic.id}/${chapters[0].id}`}>
+                      <Button size="lg" className="w-full sm:w-auto">
+                        <BookOpen className="w-5 h-5 mr-2" />
+                        Start Reading
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Chapters List */}
-        <Card>
-          <CardHeader>
-            <h2 className="text-2xl font-bold text-gray-900">Chapters</h2>
-          </CardHeader>
-          <CardContent>
-            <ChapterList
-              comicId={comic.id}
-              chapters={chapters}
-              showActions={false}
-            />
-          </CardContent>
-        </Card>
+          {/* Chapters List */}
+          <Card>
+            <CardHeader>
+              <h2 className="text-2xl font-bold text-gray-900">Chapters</h2>
+            </CardHeader>
+            <CardContent>
+              <ChapterList
+                comicId={comic.id}
+                chapters={chapters}
+                showActions={false}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

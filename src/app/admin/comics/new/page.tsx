@@ -28,7 +28,9 @@ type ComicFormData = z.infer<typeof comicSchema>;
 export default function NewComicPage() {
   const [loading, setLoading] = useState(false);
   const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [bannerImage, setBannerImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const router = useRouter();
   const { isAdmin } = useAuth();
 
@@ -47,6 +49,18 @@ export default function NewComicPage() {
       const reader = new FileReader();
       reader.onload = () => {
         setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setBannerImage(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setBannerPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -74,6 +88,13 @@ export default function NewComicPage() {
       // Upload cover image directly to Cloudinary with custom name
       const coverImageUrl = await uploadToCloudinaryClient(coverImage, coverImageName);
 
+      // Upload banner image if provided
+      let bannerImageUrl: string | undefined;
+      if (bannerImage) {
+        const bannerImageName = `${sanitizedTitle}_banner_${currentDate}`;
+        bannerImageUrl = await uploadToCloudinaryClient(bannerImage, bannerImageName);
+      }
+
       // Create comic using direct service call
       const comicId = await comicsService.create({
         title: data.title,
@@ -81,6 +102,7 @@ export default function NewComicPage() {
         author: data.author,
         genre: data.genre,
         coverImageUrl,
+        bannerImageUrl,
       });
 
       router.push(`/admin/comics/${comicId}`);
@@ -147,54 +169,93 @@ export default function NewComicPage() {
 
           {/* Comic Details */}
           <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <h3 className="text-lg font-semibold">Comic Details</h3>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <Input
-                  label="Title"
-                  {...register('title')}
-                  error={errors.title?.message}
-                  placeholder="Enter comic title"
-                />
+            <div className="space-y-6">
+              {/* Banner Image Upload */}
+              <Card>
+                <CardHeader>
+                  <h3 className="text-lg font-semibold">Banner Image (Optional)</h3>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {bannerPreview ? (
+                      <div className="aspect-[21/9] relative rounded-lg overflow-hidden">
+                        <Image
+                          src={bannerPreview}
+                          alt="Banner preview"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 600px"
+                        />
+                      </div>
+                    ) : (
+                      <div className="aspect-[21/9] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                          <p className="mt-2 text-sm text-gray-600">Upload banner image</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBannerImageChange}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
 
-                <Textarea
-                  label="Description"
-                  {...register('description')}
-                  error={errors.description?.message}
-                  placeholder="Enter comic description"
-                  rows={4}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Comic Details */}
+              <Card>
+                <CardHeader>
+                  <h3 className="text-lg font-semibold">Comic Details</h3>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <Input
-                    label="Author"
-                    {...register('author')}
-                    error={errors.author?.message}
-                    placeholder="Enter author name"
+                    label="Title"
+                    {...register('title')}
+                    error={errors.title?.message}
+                    placeholder="Enter comic title"
                   />
 
-                  <Input
-                    label="Genre"
-                    {...register('genre')}
-                    error={errors.genre?.message}
-                    placeholder="e.g., Action, Romance, Comedy"
+                  <Textarea
+                    label="Description"
+                    {...register('description')}
+                    error={errors.description?.message}
+                    placeholder="Enter comic description"
+                    rows={4}
                   />
-                </div>
 
-                <div className="flex justify-end space-x-4">
-                  <Link href="/admin">
-                    <Button variant="outline" type="button">
-                      Cancel
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Input
+                      label="Author"
+                      {...register('author')}
+                      error={errors.author?.message}
+                      placeholder="Enter author name"
+                    />
+
+                    <Input
+                      label="Genre"
+                      {...register('genre')}
+                      error={errors.genre?.message}
+                      placeholder="e.g., Action, Romance, Comedy"
+                    />
+                  </div>
+
+                  <div className="flex justify-end space-x-4">
+                    <Link href="/admin">
+                      <Button variant="outline" type="button">
+                        Cancel
+                      </Button>
+                    </Link>
+                    <Button type="submit" disabled={loading}>
+                      {loading ? 'Creating...' : 'Create Comic'}
                     </Button>
-                  </Link>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? 'Creating...' : 'Create Comic'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </form>

@@ -7,6 +7,7 @@ export interface Comic {
   author: string;
   genre: string;
   coverImageUrl: string;
+  bannerImageUrl?: string;
   createdAt: Timestamp | { seconds: number; nanoseconds: number };
   updatedAt: Timestamp | { seconds: number; nanoseconds: number };
 }
@@ -33,6 +34,7 @@ export interface ComicFormData {
   author: string;
   genre: string;
   coverImage?: FileList;
+  bannerImage?: FileList;
 }
 
 export interface ChapterFormData {

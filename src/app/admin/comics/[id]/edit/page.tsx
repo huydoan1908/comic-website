@@ -36,7 +36,9 @@ export default function EditComicPage() {
   const [submitting, setSubmitting] = useState(false);
   const [comic, setComic] = useState<Comic | null>(null);
   const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [bannerImage, setBannerImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
   const {
     register,
@@ -57,6 +59,7 @@ export default function EditComicPage() {
       
       setComic(comic);
       setImagePreview(comic.coverImageUrl);
+      setBannerPreview(comic.bannerImageUrl || null);
       
       // Populate form
       reset({
@@ -98,6 +101,18 @@ export default function EditComicPage() {
     }
   };
 
+  const handleBannerImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setBannerImage(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setBannerPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const onSubmit = async (data: ComicFormData) => {
     if (!isAdmin) {
       alert('You must be an admin to edit comics');
@@ -108,6 +123,7 @@ export default function EditComicPage() {
 
     try {
       let coverImageUrl = comic?.coverImageUrl;
+      let bannerImageUrl = comic?.bannerImageUrl;
 
       // Upload new cover image if one was selected
       if (coverImage) {
@@ -119,6 +135,15 @@ export default function EditComicPage() {
         coverImageUrl = await uploadToCloudinaryClient(coverImage, coverImageName);
       }
 
+      // Upload new banner image if one was selected
+      if (bannerImage) {
+        const sanitizedTitle = data.title.replace(/[^a-zA-Z0-9]/g, '_');
+        const currentDate = new Date().toISOString().split('T')[0];
+        const bannerImageName = `${sanitizedTitle}_banner_${currentDate}`;
+        
+        bannerImageUrl = await uploadToCloudinaryClient(bannerImage, bannerImageName);
+      }
+
       // Update comic using direct service call
       await comicsService.update(comicId, {
         title: data.title,
@@ -126,6 +151,7 @@ export default function EditComicPage() {
         author: data.author,
         genre: data.genre,
         coverImageUrl,
+        bannerImageUrl,
       });
 
       router.push(`/admin/comics/${comicId}`);
@@ -290,6 +316,57 @@ export default function EditComicPage() {
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Banner Image */}
+        <Card>
+          <CardHeader>
+            <h2 className="text-xl font-semibold">Banner Image</h2>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Current Banner
+                </label>
+                {bannerPreview ? (
+                  <div className="w-full max-w-2xl">
+                    <Image
+                      src={bannerPreview}
+                      alt="Banner preview"
+                      width={600}
+                      height={200}
+                      className="rounded-lg object-cover w-full"
+                    />
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic">No banner image set</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Upload New Banner (Optional)
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-gray-400 transition-colors">
+                  <div className="text-center">
+                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <label htmlFor="bannerImage" className="cursor-pointer">
+                      <span className="text-lg font-medium text-gray-900">Click to upload</span>
+                      <p className="text-gray-600 mt-1">PNG, JPG, GIF up to 10MB (Wide aspect ratio recommended)</p>
+                    </label>
+                    <input
+                      id="bannerImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBannerImageChange}
                       className="hidden"
                     />
                   </div>
