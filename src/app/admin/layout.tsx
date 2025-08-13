@@ -58,7 +58,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 mt-15">
       {children}
     </div>
   );

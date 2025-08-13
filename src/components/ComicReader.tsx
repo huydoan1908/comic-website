@@ -103,7 +103,7 @@ export function ComicReader({ chapters, initialChapterIndex = 0, initialPageInde
   }
 
   return (
-    <div className="relative min-h-screen bg-black">
+    <div className="relative min-h-screen bg-black mt-15">
       {/* Top Controls - Always visible */}
       <div className="bg-gradient-to-b from-black/70 to-transparent p-4">
         <div className="flex items-center justify-between text-white">

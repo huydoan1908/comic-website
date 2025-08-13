@@ -11,7 +11,7 @@ import { Pagination } from '@/components/ui/Pagination';
 import { ItemsPerPageSelector } from '@/components/ui/ItemsPerPageSelector';
 import { comicsService } from '@/services/firebase';
 import { usePagination } from '@/hooks/usePagination';
-import { Search, Filter, Clock } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 
 export default function HomePage() {
   const [comics, setComics] = useState<Comic[]>([]);
@@ -100,12 +100,6 @@ export default function HomePage() {
     setSelectedGenre(genre === selectedGenre ? '' : genre);
   };
 
-  const getRecentComics = () => {
-    return comics
-      .sort((a, b) => timestampToDate(b.createdAt).getTime() - timestampToDate(a.createdAt).getTime())
-      .slice(0, 8);
-  };
-
   const getLatestComics = () => {
     return comics
       .sort((a, b) => timestampToDate(b.createdAt).getTime() - timestampToDate(a.createdAt).getTime())
@@ -118,17 +112,8 @@ export default function HomePage() {
       <ComicCarousel comics={getLatestComics()} />
 
       {/* Search Section */}
-      <section className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Discover Amazing Comics
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Search through our extensive collection of comics and find your next favorite story.
-            </p>
-          </div>
-          
+      <section>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">          
           {/* Search Form */}
           <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
             <div className="flex flex-col sm:flex-row gap-4">
@@ -147,22 +132,6 @@ export default function HomePage() {
               </Button>
             </div>
           </form>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-3xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">{comics.length}</div>
-              <div className="text-sm text-gray-600">Comics Available</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">{genres.length}</div>
-              <div className="text-sm text-gray-600">Genres</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">24/7</div>
-              <div className="text-sm text-gray-600">Available</div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -232,17 +201,6 @@ export default function HomePage() {
           )}
         </div>
       </section>
-
-      {/* Recent Comics */}
-      {!loading && !searchTerm && !selectedGenre && comics.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-white">
-          <div className="flex items-center mb-8">
-            <Clock className="w-6 h-6 text-gray-600 mr-2" />
-            <h2 className="text-3xl font-bold text-gray-900">Recently Added</h2>
-          </div>
-          <ComicGrid comics={getRecentComics()} />
-        </section>
-      )}
 
       {/* Call to Action */}
       {!loading && comics.length === 0 && (

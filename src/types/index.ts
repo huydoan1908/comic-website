@@ -10,6 +10,12 @@ export interface Comic {
   bannerImageUrl?: string;
   createdAt: Timestamp | { seconds: number; nanoseconds: number };
   updatedAt: Timestamp | { seconds: number; nanoseconds: number };
+  latestChapter?: {
+    number: number;
+    title?: string;
+    id: string;
+    createdAt: Timestamp | { seconds: number; nanoseconds: number };
+  };
 }
 
 export interface Chapter {

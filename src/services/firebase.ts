@@ -19,30 +19,72 @@ import { Comic, Chapter, User } from '@/types';
 
 // Comics CRUD operations
 export const comicsService = {
-  // Get all comics
+  // Get all comics with latest chapter info
   async getAll(): Promise<Comic[]> {
     const comicsRef = collection(db, 'comics');
     const q = query(comicsRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
     
-    return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
+    const comics = snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
       id: doc.id,
       ...doc.data(),
     })) as Comic[];
+
+    // Fetch latest chapter for each comic
+    const comicsWithLatestChapter = await Promise.all(
+      comics.map(async (comic) => {
+        const latestChapter = await this.getLatestChapter(comic.id);
+        return {
+          ...comic,
+          latestChapter,
+        };
+      })
+    );
+    
+    return comicsWithLatestChapter;
   },
 
-  // Get comic by ID
+  // Get latest chapter for a comic
+  async getLatestChapter(comicId: string): Promise<Comic['latestChapter']> {
+    try {
+      const chaptersRef = collection(db, 'comics', comicId, 'chapters');
+      const q = query(chaptersRef, orderBy('chapterNumber', 'desc'));
+      const snapshot = await getDocs(q);
+      
+      if (!snapshot.empty) {
+        const latestDoc = snapshot.docs[0];
+        const chapterData = latestDoc.data();
+        return {
+          id: latestDoc.id,
+          number: chapterData.chapterNumber,
+          title: chapterData.title,
+          createdAt: chapterData.createdAt,
+        };
+      }
+      return undefined;
+    } catch (error) {
+      console.error('Error fetching latest chapter:', error);
+      return undefined;
+    }
+  },
+
+  // Get comic by ID with latest chapter info
   async getById(id: string): Promise<Comic | null> {
     const docRef = doc(db, 'comics', id);
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() } as Comic;
+      const comic = { id: docSnap.id, ...docSnap.data() } as Comic;
+      const latestChapter = await this.getLatestChapter(id);
+      return {
+        ...comic,
+        latestChapter,
+      };
     }
     return null;
   },
 
-  // Search comics by title, author, or genre
+  // Search comics by title, author, or genre with latest chapter info
   async search(searchTerm: string): Promise<Comic[]> {
     const comicsRef = collection(db, 'comics');
     const snapshot = await getDocs(comicsRef);
@@ -53,23 +95,49 @@ export const comicsService = {
     })) as Comic[];
 
     // Client-side filtering (for better search experience, consider implementing server-side search)
-    return comics.filter(comic =>
+    const filteredComics = comics.filter(comic =>
       comic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       comic.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
       comic.genre.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Fetch latest chapter for each filtered comic
+    const comicsWithLatestChapter = await Promise.all(
+      filteredComics.map(async (comic) => {
+        const latestChapter = await this.getLatestChapter(comic.id);
+        return {
+          ...comic,
+          latestChapter,
+        };
+      })
+    );
+    
+    return comicsWithLatestChapter;
   },
 
-  // Filter comics by genre
+  // Filter comics by genre with latest chapter info
   async getByGenre(genre: string): Promise<Comic[]> {
     const comicsRef = collection(db, 'comics');
     const q = query(comicsRef, where('genre', '==', genre), orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
     
-    return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
+    const comics = snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
       id: doc.id,
       ...doc.data(),
     })) as Comic[];
+
+    // Fetch latest chapter for each comic
+    const comicsWithLatestChapter = await Promise.all(
+      comics.map(async (comic) => {
+        const latestChapter = await this.getLatestChapter(comic.id);
+        return {
+          ...comic,
+          latestChapter,
+        };
+      })
+    );
+    
+    return comicsWithLatestChapter;
   },
 
   // Create new comic

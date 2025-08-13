@@ -9,7 +9,7 @@ export function Header() {
   const { user, isAdmin, logout } = useAuth();
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white shadow-sm border-b z-10">
+    <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -20,7 +20,7 @@ export function Header() {
 
           {/* User actions */}
           <div className="flex items-center space-x-4">
-            {user ? (
+            {user && (
               <>
                 {isAdmin && (
                   <Link href="/admin">
@@ -37,12 +37,6 @@ export function Header() {
                   Logout
                 </Button>
               </>
-            ) : (
-              <Link href="/admin/login">
-                <Button size="sm">
-                  Admin Login
-                </Button>
-              </Link>
             )}
           </div>
         </div>
