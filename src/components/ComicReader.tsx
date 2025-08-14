@@ -33,8 +33,8 @@ export function ComicReader({ chapters, chapterNumber = 1, comicTitle, comicId }
     return `/read/${comicId}/${chapter.id}`;
   };
 
-  const nextChapterUrl = chapterNumber < chapters.length - 1 ? getChapterUrl(chapterNumber) : null;
-  const prevChapterUrl = chapterNumber > 0 ? getChapterUrl(chapterNumber - 2) : null;
+  const nextChapterUrl = chapterNumber < chapters.length ? getChapterUrl(chapterNumber) : null;
+  const prevChapterUrl = chapterNumber > 1 ? getChapterUrl(chapterNumber - 2) : null;
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
