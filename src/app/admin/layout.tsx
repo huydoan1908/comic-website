@@ -1,15 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -22,14 +20,14 @@ export default function AdminLayout({
   useEffect(() => {
     if (!loading && mounted) {
       // Allow access to login page even when not authenticated
-      if (pathname === '/admin/login' || pathname === '/admin/setup') {
+      if (pathname === "/admin/login" || pathname === "/admin/setup") {
         return;
       }
-      
+
       if (!user) {
-        router.push('/admin/login');
+        router.push("/admin/login");
       } else if (!isAdmin) {
-        router.push('/');
+        router.push("/");
       }
     }
   }, [user, isAdmin, loading, router, mounted, pathname]);
@@ -44,12 +42,8 @@ export default function AdminLayout({
   }
 
   // Allow login page to render even when not authenticated
-  if (pathname === '/admin/login'  || pathname === '/admin/setup') {
-    return (
-      <div className="min-h-screen bg-gray-100">
-        {children}
-      </div>
-    );
+  if (pathname === "/admin/login" || pathname === "/admin/setup") {
+    return <div className="min-h-screen bg-gray-100">{children}</div>;
   }
 
   // Block other admin pages if not authenticated or not admin
@@ -58,8 +52,10 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 mt-15">
-      {children}
-    </div>
+    <>
+      <Header />
+      <div className="min-h-screen bg-gray-100 mt-15">{children}</div>
+      <Footer />
+    </>
   );
 }

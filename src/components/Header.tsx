@@ -1,12 +1,15 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from './ui/Button';
-import { BookOpen, User } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "./ui/Button";
+import { BookOpen, Search, User } from "lucide-react";
+import SearchBar from "./SearchBar";
 
 export function Header() {
   const { user, isAdmin, logout } = useAuth();
+  const [isSearchOpen, setSearchOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-10">
@@ -20,7 +23,7 @@ export function Header() {
 
           {/* User actions */}
           <div className="flex items-center space-x-4">
-            {user && (
+            {user ? (
               <>
                 {isAdmin && (
                   <Link href="/admin">
@@ -36,6 +39,13 @@ export function Header() {
                 <Button onClick={logout} variant="outline" size="sm">
                   Logout
                 </Button>
+              </>
+            ) : (
+              <>
+                <Button className="rounded-4xl h-auto px-2 aspect-1/1" variant="outline" size="sm" onClick={() => setSearchOpen(true)}>
+                  <Search size={20} />
+                </Button>
+                <SearchBar isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
               </>
             )}
           </div>

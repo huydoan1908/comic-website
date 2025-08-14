@@ -61,8 +61,7 @@ export default function ReadPage() {
     <ComicReader
       chapters={chapters}
       comicId={params.comicId as string}
-      initialChapterIndex={validChapterIndex}
-      initialPageIndex={0}
+      chapterNumber={validChapterIndex + 1}
       comicTitle={comic.title}
     />
   );

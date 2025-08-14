@@ -41,7 +41,7 @@ export function ChapterList({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 max-h-[70vh] overflow-y-auto">
       {chapters.map((chapter) => (
         <div key={chapter.id} className={showActions ? "hover:shadow-md transition-shadow" : ""}>
           {showActions ? (

@@ -27,7 +27,7 @@ export default function ComicDetailPage() {
           setComic(comicData);
 
           // Fetch chapters
-          const chaptersData = await chaptersService.getByComicId(params.id as string);
+          const chaptersData = await chaptersService.getByComicId(params.id as string, { orderBy: 'desc' });
           setChapters(chaptersData);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -164,10 +164,10 @@ export default function ComicDetailPage() {
                 {/* Start Reading Button */}
                 {chapters.length > 0 && (
                   <div>
-                    <Link href={`/read/${comic.id}/${chapters[0].id}`}>
+                    <Link href={`/read/${comic.id}/${chapters[chapters.length - 1].id}`}>
                       <Button size="lg" className="w-full sm:w-auto">
                         <BookOpen className="w-5 h-5 mr-2" />
-                        Start Reading
+                        Read First Chapter
                       </Button>
                     </Link>
                   </div>

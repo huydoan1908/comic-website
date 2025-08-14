@@ -1,0 +1,15 @@
+.comic-reader-swiper .swiper-slide-next,
+.comic-reader-swiper .swiper-slide-prev {
+  filter: brightness(0.2);
+}
+
+.comic-reader-swiper .swiper-button-next,
+.comic-reader-swiper .swiper-button-prev {
+  height: 100%;
+  top: 0;
+}
+
+.comic-reader-swiper .swiper-button-next::after,
+.comic-reader-swiper .swiper-button-prev::after {
+  color: gray;
+}

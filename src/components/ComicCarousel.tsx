@@ -12,6 +12,8 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
+import '@/assets/css/ComicCarousel.css';
+
 interface ComicCarouselProps {
   comics: Comic[];
 }
@@ -32,7 +34,7 @@ export function ComicCarousel({ comics }: ComicCarouselProps) {
   }
 
   return (
-    <section className="relative w-full aspect-8/12 lg:aspect-16/9 overflow-hidden">
+    <section className="comic-carousel relative w-full aspect-2/3 lg:aspect-5/2 overflow-hidden">
       <Swiper
         modules={[Navigation, Pagination, Autoplay, EffectFade]}
         effect="fade"
@@ -72,7 +74,7 @@ export function ComicCarousel({ comics }: ComicCarouselProps) {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                     {/* Text Content */}
                     <div className="text-white space-y-4 md:space-y-6 order-2 lg:order-1">
-                      <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+                      <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">
                         {comic.title}
                       </h1>
                       
@@ -119,77 +121,6 @@ export function ComicCarousel({ comics }: ComicCarouselProps) {
           </SwiperSlide>
         ))}
       </Swiper>
-
-      {/* Custom Navigation Styling */}
-      <style jsx global>{`
-        .swiper-button-next,
-        .swiper-button-prev {
-          color: white !important;
-          background: rgba(0, 0, 0, 0.3) !important;
-          width: 44px !important;
-          height: 44px !important;
-          border-radius: 50% !important;
-          backdrop-filter: blur(4px) !important;
-          border: 1px solid rgba(255, 255, 255, 0.2) !important;
-          transition: all 0.2s ease !important;
-        }
-
-        .swiper-button-next:hover,
-        .swiper-button-prev:hover {
-          background: rgba(0, 0, 0, 0.5) !important;
-          transform: scale(1.05) !important;
-        }
-
-        .swiper-button-next::after,
-        .swiper-button-prev::after {
-          font-size: 16px !important;
-          font-weight: bold !important;
-        }
-
-        .swiper-pagination-bullet {
-          background: rgba(255, 255, 255, 0.5) !important;
-          width: 10px !important;
-          height: 10px !important;
-          transition: all 0.2s ease !important;
-        }
-
-        .swiper-pagination-bullet-active {
-          background: white !important;
-          width: 12px !important;
-          height: 12px !important;
-        }
-
-        .swiper-pagination {
-          bottom: 16px !important;
-        }
-
-        @media (min-width: 768px) {
-          .swiper-button-next,
-          .swiper-button-prev {
-            width: 50px !important;
-            height: 50px !important;
-          }
-
-          .swiper-button-next::after,
-          .swiper-button-prev::after {
-            font-size: 18px !important;
-          }
-
-          .swiper-pagination {
-            bottom: 20px !important;
-          }
-
-          .swiper-pagination-bullet {
-            width: 12px !important;
-            height: 12px !important;
-          }
-
-          .swiper-pagination-bullet-active {
-            width: 14px !important;
-            height: 14px !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

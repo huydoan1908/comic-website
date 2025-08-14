@@ -8,31 +8,52 @@ import {
   deleteDoc,
   query,
   orderBy,
-  where,
   setDoc,
   Timestamp,
   DocumentData,
   QueryDocumentSnapshot,
+  limit,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Comic, Chapter, User } from '@/types';
 
 // Comics CRUD operations
 export const comicsService = {
-  // Get all comics with latest chapter info
-  async getAll(): Promise<Comic[]> {
+  // Get all comics with pagination
+  async getAll(options: {
+    page?: number;
+    limit?: number;
+  } = {}): Promise<{
+    comics: Comic[];
+    totalCount: number;
+    hasMore: boolean;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const { page = 1, limit: pageLimit = 10 } = options;
+    
     const comicsRef = collection(db, 'comics');
-    const q = query(comicsRef, orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(q);
+    
+    // Build base query
+    const baseQuery = query(comicsRef, orderBy('updatedAt', 'desc'));
+    
+    // Get all comics first
+    const snapshot = await getDocs(baseQuery);
     
     const comics = snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
       id: doc.id,
       ...doc.data(),
     })) as Comic[];
+    
+    const totalCount = comics.length;
+    
+    // Apply pagination
+    const offset = (page - 1) * pageLimit;
+    const paginatedComics = comics.slice(offset, offset + pageLimit);
 
     // Fetch latest chapter for each comic
     const comicsWithLatestChapter = await Promise.all(
-      comics.map(async (comic) => {
+      paginatedComics.map(async (comic) => {
         const latestChapter = await this.getLatestChapter(comic.id);
         return {
           ...comic,
@@ -41,7 +62,35 @@ export const comicsService = {
       })
     );
     
-    return comicsWithLatestChapter;
+    const totalPages = Math.ceil(totalCount / pageLimit);
+    const hasMore = page < totalPages;
+    
+    return {
+      comics: comicsWithLatestChapter,
+      totalCount,
+      hasMore,
+      currentPage: page,
+      totalPages,
+    };
+  },
+
+  // Get all unique genres
+  async getAllGenres(): Promise<string[]> {
+    const comicsRef = collection(db, 'comics');
+    const snapshot = await getDocs(comicsRef);
+    
+    const comics = snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Comic[];
+
+    // Extract unique genres - split comma-separated genres and flatten
+    const allGenres = comics.flatMap((comic: Comic) => 
+      comic.genre ? comic.genre.split(',').map(g => g.trim()) : []
+    );
+    const uniqueGenres = [...new Set(allGenres)].filter(genre => genre.length > 0);
+    
+    return uniqueGenres;
   },
 
   // Get latest chapter for a comic
@@ -84,8 +133,19 @@ export const comicsService = {
     return null;
   },
 
-  // Search comics by title, author, or genre with latest chapter info
-  async search(searchTerm: string): Promise<Comic[]> {
+  // Search comics by title, author, or genre with latest chapter info and pagination
+  async search(searchTerm: string, options: {
+    page?: number;
+    limit?: number;
+  } = {}): Promise<{
+    comics: Comic[];
+    totalCount: number;
+    hasMore: boolean;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const { page = 1, limit: pageLimit = 10 } = options;
+    
     const comicsRef = collection(db, 'comics');
     const snapshot = await getDocs(comicsRef);
     
@@ -101,9 +161,15 @@ export const comicsService = {
       comic.genre.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const totalCount = filteredComics.length;
+    
+    // Apply pagination
+    const offset = (page - 1) * pageLimit;
+    const paginatedComics = filteredComics.slice(offset, offset + pageLimit);
+
     // Fetch latest chapter for each filtered comic
     const comicsWithLatestChapter = await Promise.all(
-      filteredComics.map(async (comic) => {
+      paginatedComics.map(async (comic) => {
         const latestChapter = await this.getLatestChapter(comic.id);
         return {
           ...comic,
@@ -112,23 +178,55 @@ export const comicsService = {
       })
     );
     
-    return comicsWithLatestChapter;
+    const totalPages = Math.ceil(totalCount / pageLimit);
+    const hasMore = page < totalPages;
+    
+    return {
+      comics: comicsWithLatestChapter,
+      totalCount,
+      hasMore,
+      currentPage: page,
+      totalPages,
+    };
   },
 
-  // Filter comics by genre with latest chapter info
-  async getByGenre(genre: string): Promise<Comic[]> {
+  // Filter comics by genre with latest chapter info and pagination
+  async getByGenre(genre: string, options: {
+    page?: number;
+    limit?: number;
+  } = {}): Promise<{
+    comics: Comic[];
+    totalCount: number;
+    hasMore: boolean;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const { page = 1, limit: pageLimit = 10 } = options;
+    
     const comicsRef = collection(db, 'comics');
-    const q = query(comicsRef, where('genre', '==', genre), orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(comicsRef);
     
     const comics = snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
       id: doc.id,
       ...doc.data(),
     })) as Comic[];
 
+    // Filter by genre - handling comma-separated genres like in getAll
+    const filteredComics = comics.filter(comic => {
+      if (!comic.genre) return false;
+      const comicGenres = comic.genre.split(',').map(g => g.trim());
+      return comicGenres.includes(genre);
+    });
+
+    const totalCount = filteredComics.length;
+    
+    // Apply pagination
+    const offset = (page - 1) * pageLimit;
+    const paginatedComics = filteredComics.slice(offset, offset + pageLimit);
+
     // Fetch latest chapter for each comic
     const comicsWithLatestChapter = await Promise.all(
-      comics.map(async (comic) => {
+      paginatedComics.map(async (comic) => {
         const latestChapter = await this.getLatestChapter(comic.id);
         return {
           ...comic,
@@ -137,7 +235,16 @@ export const comicsService = {
       })
     );
     
-    return comicsWithLatestChapter;
+    const totalPages = Math.ceil(totalCount / pageLimit);
+    const hasMore = page < totalPages;
+    
+    return {
+      comics: comicsWithLatestChapter,
+      totalCount,
+      hasMore,
+      currentPage: page,
+      totalPages,
+    };
   },
 
   // Create new comic
@@ -177,9 +284,9 @@ export const comicsService = {
 // Chapters CRUD operations
 export const chaptersService = {
   // Get all chapters for a comic
-  async getByComicId(comicId: string): Promise<Chapter[]> {
+  async getByComicId(comicId: string, options?: { orderBy?: 'asc' | 'desc' }): Promise<Chapter[]> {
     const chaptersRef = collection(db, 'comics', comicId, 'chapters');
-    const q = query(chaptersRef, orderBy('chapterNumber', 'asc'));
+    const q = query(chaptersRef, orderBy('chapterNumber', options?.orderBy || 'asc'));
     const snapshot = await getDocs(q);
     
     return snapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
@@ -202,6 +309,7 @@ export const chaptersService = {
   // Create new chapter
   async create(comicId: string, chapterData: Omit<Chapter, 'id' | 'comicId' | 'createdAt' | 'updatedAt'>): Promise<string> {
     const chaptersRef = collection(db, 'comics', comicId, 'chapters');
+    const comicRef = doc(db, 'comics', comicId);
     const now = Timestamp.now();
     
     const docRef = await addDoc(chaptersRef, {
@@ -210,7 +318,11 @@ export const chaptersService = {
       createdAt: now,
       updatedAt: now,
     });
-    
+
+    await updateDoc(comicRef, {
+      updatedAt: now,
+    });
+
     return docRef.id;
   },
 

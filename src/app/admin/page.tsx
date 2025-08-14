@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Comic } from "@/types";
@@ -9,16 +9,17 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Pagination } from "@/components/ui/Pagination";
-import { ItemsPerPageSelector } from "@/components/ui/ItemsPerPageSelector";
 import { comicsService } from "@/services/firebase";
 import { useAuth } from "@/hooks/useAuth";
-import { usePagination } from "@/hooks/usePagination";
 import { BookOpen, Plus, Edit, Trash2, BarChart3, Eye, Search } from "lucide-react";
 
 export default function AdminDashboard() {
   const [comics, setComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [stats, setStats] = useState({
     totalComics: 0,
     totalChapters: 0,
@@ -26,54 +27,72 @@ export default function AdminDashboard() {
   });
   const { isAdmin } = useAuth();
 
-  // Filter comics based on search term
-  const filteredComics = useMemo(() => {
-    if (!searchTerm.trim()) return comics;
-    
-    const term = searchTerm.toLowerCase().trim();
-    return comics.filter((comic) => 
-      comic.title.toLowerCase().includes(term) ||
-      comic.author.toLowerCase().includes(term) ||
-      comic.genre.toLowerCase().includes(term) ||
-      comic.description?.toLowerCase().includes(term)
-    );
-  }, [comics, searchTerm]);
+  // Fixed items per page
+  const ITEMS_PER_PAGE = 10;
 
-  // Pagination hook
-  const {
-    currentPage,
-    totalPages,
-    currentItems: paginatedComics,
-    totalItems,
-    goToPage,
-    itemsPerPage,
-    setItemsPerPage
-  } = usePagination({
-    items: filteredComics,
-    itemsPerPage: 10
-  });
+  const fetchComics = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      let result;
+      if (searchTerm.trim()) {
+        // Use search function when there's a search term
+        result = await comicsService.search(searchTerm.trim(), {
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+        });
+      } else {
+        // Use getAll when no search term
+        result = await comicsService.getAll({
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+        });
+      }
+      
+      setComics(result.comics);
+      setTotalPages(result.totalPages);
+      setTotalItems(result.totalCount);
+    } catch (error) {
+      console.error("Error fetching comics:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, searchTerm]);
 
   useEffect(() => {
     fetchComics();
+  }, [fetchComics]);
+
+  useEffect(() => {
+    fetchStats();
   }, []);
 
-  const fetchComics = async () => {
+  useEffect(() => {
+    // Reset to first page when search term changes
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const fetchStats = async () => {
     try {
-      const data = await comicsService.getAll();
-      setComics(data);
+      // Get all comics for stats calculation
+      const allComicsResult = await comicsService.getAll({ limit: 1000 }); // Get a large number for stats
+      const allComics = allComicsResult.comics;
+      
       setStats({
-        totalComics: data.length,
+        totalComics: allComicsResult.totalCount,
         totalChapters: 0, // Will be calculated from chapters
-        recentComics: data.filter((comic: Comic) => {
+        recentComics: allComics.filter((comic: Comic) => {
           const weekAgo = new Date();
           weekAgo.setDate(weekAgo.getDate() - 7);
           return timestampToDate(comic.createdAt) > weekAgo;
         }).length,
       });
     } catch (error) {
-      console.error("Error fetching comics:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching stats:", error);
     }
   };
 
@@ -86,7 +105,9 @@ export default function AdminDashboard() {
     if (confirm("Are you sure you want to delete this comic? This action cannot be undone.")) {
       try {
         await comicsService.delete(comicId);
-        setComics(comics.filter((comic) => comic.id !== comicId));
+        // Refresh the current page
+        fetchComics();
+        fetchStats();
       } catch (error) {
         console.error("Error deleting comic:", error);
         alert("Failed to delete comic");
@@ -158,26 +179,19 @@ export default function AdminDashboard() {
                   />
                 </div>
               </div>
-              <ItemsPerPageSelector
-                itemsPerPage={itemsPerPage}
-                onItemsPerPageChange={setItemsPerPage}
-                options={[5, 10, 15, 20, 25]}
-              />
             </div>
             
             {searchTerm && (
               <div className="mt-4 text-sm text-gray-600">
-                Showing {totalItems} of {comics.length} comics
-                {totalItems !== comics.length && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSearchTerm("")}
-                    className="ml-2 text-xs"
-                  >
-                    Clear search
-                  </Button>
-                )}
+                Found {totalItems} comics matching &quot;{searchTerm}&quot;
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("")}
+                  className="ml-2 text-xs"
+                >
+                  Clear search
+                </Button>
               </div>
             )}
           </CardContent>
@@ -205,7 +219,7 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
-          ) : filteredComics.length === 0 ? (
+          ) : comics.length === 0 ? (
             <div className="text-center py-8">
               {searchTerm ? (
                 <>
@@ -241,7 +255,7 @@ export default function AdminDashboard() {
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {paginatedComics.map((comic) => (
+                    {comics.map((comic: Comic) => (
                       <tr key={comic.id}>
                         <td className="px-6 py-4">
                           <div className="flex items-center">
@@ -288,7 +302,7 @@ export default function AdminDashboard() {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={goToPage}
-                  itemsPerPage={itemsPerPage}
+                  itemsPerPage={ITEMS_PER_PAGE}
                   totalItems={totalItems}
                 />
               )}
