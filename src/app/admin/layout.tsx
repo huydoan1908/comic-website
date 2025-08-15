@@ -26,8 +26,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       if (!user) {
         router.push("/admin/login");
-      } else if (!isAdmin) {
-        router.push("/");
       }
     }
   }, [user, isAdmin, loading, router, mounted, pathname]);
@@ -42,7 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   // Allow login page to render even when not authenticated
-  if (pathname === "/admin/login" || pathname === "/admin/setup") {
+  if (pathname === "/admin/login") {
     return <div className="min-h-screen bg-gray-100">{children}</div>;
   }
 

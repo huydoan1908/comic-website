@@ -4,14 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Comic } from "@/types";
-import { timestampToDate } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Pagination } from "@/components/ui/Pagination";
 import { comicsService } from "@/services/firebase";
 import { useAuth } from "@/hooks/useAuth";
-import { BookOpen, Plus, Edit, Trash2, BarChart3, Eye, Search } from "lucide-react";
+import { BookOpen, Plus, Edit, Trash2, Eye, Search } from "lucide-react";
+import useDebounce from "@/hooks/useDebounce";
 
 export default function AdminDashboard() {
   const [comics, setComics] = useState<Comic[]>([]);
@@ -20,12 +20,10 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [stats, setStats] = useState({
-    totalComics: 0,
-    totalChapters: 0,
-    recentComics: 0,
-  });
   const { isAdmin } = useAuth();
+
+  // Debounce search term by 500ms
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   // Fixed items per page
   const ITEMS_PER_PAGE = 10;
@@ -33,22 +31,20 @@ export default function AdminDashboard() {
   const fetchComics = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       let result;
-      if (searchTerm.trim()) {
-        // Use search function when there's a search term
-        result = await comicsService.search(searchTerm.trim(), {
+      if (debouncedSearchTerm.trim()) {
+        result = await comicsService.search(debouncedSearchTerm.trim(), {
           page: currentPage,
           limit: ITEMS_PER_PAGE,
         });
       } else {
-        // Use getAll when no search term
         result = await comicsService.getAll({
           page: currentPage,
           limit: ITEMS_PER_PAGE,
         });
       }
-      
+
       setComics(result.comics);
       setTotalPages(result.totalPages);
       setTotalItems(result.totalCount);
@@ -57,43 +53,18 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchTerm]);
+  }, [currentPage, debouncedSearchTerm]);
 
   useEffect(() => {
     fetchComics();
   }, [fetchComics]);
 
   useEffect(() => {
-    fetchStats();
-  }, []);
-
-  useEffect(() => {
-    // Reset to first page when search term changes
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [debouncedSearchTerm]);
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const fetchStats = async () => {
-    try {
-      // Get all comics for stats calculation
-      const allComicsResult = await comicsService.getAll({ limit: 1000 }); // Get a large number for stats
-      const allComics = allComicsResult.comics;
-      
-      setStats({
-        totalComics: allComicsResult.totalCount,
-        totalChapters: 0, // Will be calculated from chapters
-        recentComics: allComics.filter((comic: Comic) => {
-          const weekAgo = new Date();
-          weekAgo.setDate(weekAgo.getDate() - 7);
-          return timestampToDate(comic.createdAt) > weekAgo;
-        }).length,
-      });
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-    }
   };
 
   const handleDeleteComic = async (comicId: string) => {
@@ -105,9 +76,7 @@ export default function AdminDashboard() {
     if (confirm("Are you sure you want to delete this comic? This action cannot be undone.")) {
       try {
         await comicsService.delete(comicId);
-        // Refresh the current page
         fetchComics();
-        fetchStats();
       } catch (error) {
         console.error("Error deleting comic:", error);
         alert("Failed to delete comic");
@@ -117,7 +86,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
       <div className="mb-8">
         <div className="flex justify-between items-start md:flex-row flex-col gap-4">
           <div>
@@ -135,34 +103,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <BookOpen className="h-8 w-8 text-gray-700" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Comics</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalComics}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <BarChart3 className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Recent Comics</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.recentComics}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search and Filters */}
       <div className="mb-6">
         <Card>
           <CardContent className="p-6">
@@ -170,26 +110,15 @@ export default function AdminDashboard() {
               <div className="flex-1 max-w-md">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    type="text"
-                    placeholder="Search comics by title, author, genre..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
+                  <Input type="text" placeholder="Search comics by title, author, genre..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
                 </div>
               </div>
             </div>
-            
-            {searchTerm && (
+
+            {debouncedSearchTerm && (
               <div className="mt-4 text-sm text-gray-600">
-                Found {totalItems} comics matching &quot;{searchTerm}&quot;
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSearchTerm("")}
-                  className="ml-2 text-xs"
-                >
+                Found {totalItems} comics matching &quot;{debouncedSearchTerm}&quot;
+                <Button variant="outline" size="sm" onClick={() => setSearchTerm("")} className="ml-2 text-xs">
                   Clear search
                 </Button>
               </div>
@@ -221,13 +150,11 @@ export default function AdminDashboard() {
             </div>
           ) : comics.length === 0 ? (
             <div className="text-center py-8">
-              {searchTerm ? (
+              {debouncedSearchTerm ? (
                 <>
                   <Search className="mx-auto h-12 w-12 text-gray-400" />
                   <h3 className="mt-2 text-sm font-medium text-gray-900">No comics found</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    No comics match your search for &quot;{searchTerm}&quot;
-                  </p>
+                  <p className="mt-1 text-sm text-gray-500">No comics match your search for &quot;{debouncedSearchTerm}&quot;</p>
                   <div className="mt-6">
                     <Button variant="outline" onClick={() => setSearchTerm("")}>
                       Clear search
@@ -295,17 +222,8 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
-              
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={goToPage}
-                  itemsPerPage={ITEMS_PER_PAGE}
-                  totalItems={totalItems}
-                />
-              )}
+
+              {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} itemsPerPage={ITEMS_PER_PAGE} totalItems={totalItems} />}
             </>
           )}
         </CardContent>

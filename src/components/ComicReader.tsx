@@ -87,8 +87,8 @@ export function ComicReader({ chapters, chapterNumber = 1, comicTitle, comicId }
               mousewheel
               keyboard
               breakpoints={{
-                640: {
-                  slidesPerView: 2,
+                1024: {
+                  slidesPerView: 3,
                   centeredSlides: true,
                 },
               }}
@@ -109,8 +109,8 @@ export function ComicReader({ chapters, chapterNumber = 1, comicTitle, comicId }
           <div className="flex flex-col items-center space-y-6 w-full">
             {/* Chapter Pages */}
             {currentChapter.pageImageUrls.map((pageUrl, pageIndex) => (
-              <div key={`${currentChapter.id}-${pageIndex}`} className="relative w-full max-w-6xl">
-                <Image src={pageUrl} alt={`Chapter ${currentChapter.chapterNumber}, Page ${pageIndex + 1}`} width={1200} height={1800} className="w-full h-auto object-contain max-h-screen" loading={pageIndex < 3 ? "eager" : "lazy"} />
+              <div key={`${currentChapter.id}-${pageIndex}`} className="relative w-full max-w-5xl">
+                <Image src={pageUrl} alt={`Chapter ${currentChapter.chapterNumber}, Page ${pageIndex + 1}`} width={800} height={1200} className="w-full h-auto object-contain" priority={pageIndex === 0} loading={pageIndex < 3 ? "eager" : "lazy"} />
               </div>
             ))}
           </div>
@@ -135,16 +135,10 @@ export function ComicReader({ chapters, chapterNumber = 1, comicTitle, comicId }
             <Button variant="secondary" size="sm" onClick={() => setViewMode(viewMode === "single" ? "continuous" : "single")} title={`Switch to ${viewMode === "single" ? "continuous" : "single"} view`}>
               {viewMode === "single" ? <Scroll className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
             </Button>
-            {viewMode === "single" ? (
-              <div className="text-center">
-                <div className="text-xs opacity-75">Chapter {currentChapter.chapterNumber}</div>
-              </div>
-            ) : (
-              <div className="text-center">
-                <div className="text-xs md:text-lg">Chapter {currentChapter.chapterNumber}</div>
-                <div className="text-xs opacity-75">{currentChapter.pageImageUrls.length} Pages</div>
-              </div>
-            )}
+            <div className="text-center">
+              <div className="text-xs md:text-lg">Chapter {currentChapter.chapterNumber}</div>
+              <div className="text-xs opacity-75">{currentChapter.pageImageUrls.length} Pages</div>
+            </div>
             <Button variant="secondary" size="sm" onClick={() => setShowChapterList(true)}>
               <Menu className="w-4 h-4" />
             </Button>
@@ -168,8 +162,9 @@ export function ComicReader({ chapters, chapterNumber = 1, comicTitle, comicId }
 
       {/* Chapter List Modal */}
       {showChapterList && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="bg-black/80 absolute inset-0" onClick={() => setShowChapterList(false)} />
+          <div className="relative z-1 bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b">
               <h2 className="text-lg font-semibold">Chapters</h2>
               <Button variant="outline" size="sm" onClick={() => setShowChapterList(false)}>

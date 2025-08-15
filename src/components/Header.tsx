@@ -23,7 +23,7 @@ export function Header() {
 
           {/* User actions */}
           <div className="flex items-center space-x-4">
-            {user ? (
+            {user && (
               <>
                 {isAdmin && (
                   <Link href="/admin">
@@ -40,14 +40,11 @@ export function Header() {
                   Logout
                 </Button>
               </>
-            ) : (
-              <>
-                <Button className="rounded-4xl h-auto px-2 aspect-1/1" variant="outline" size="sm" onClick={() => setSearchOpen(true)}>
-                  <Search size={20} />
-                </Button>
-                <SearchBar isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
-              </>
             )}
+            <Button className="rounded-4xl h-auto px-2 aspect-1/1" variant="outline" size="sm" onClick={() => setSearchOpen(true)}>
+              <Search size={20} />
+            </Button>
+            <SearchBar isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
           </div>
         </div>
       </div>

@@ -49,7 +49,6 @@ function SearchContent() {
   }, [currentPage, query]);
 
   useEffect(() => {
-    // Reset to first page when search query changes
     setCurrentPage(1);
   }, [query]);
 

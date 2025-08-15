@@ -34,21 +34,6 @@ export interface User {
   role: 'admin' | 'user';
 }
 
-export interface ComicFormData {
-  title: string;
-  description: string;
-  author: string;
-  genre: string;
-  coverImage?: FileList;
-  bannerImage?: FileList;
-}
-
-export interface ChapterFormData {
-  chapterNumber: number;
-  title?: string;
-  pages?: FileList;
-}
-
 export interface CloudinaryResponse {
   public_id: string;
   version: number;
@@ -67,8 +52,4 @@ export interface CloudinaryResponse {
   secure_url: string;
   folder: string;
   original_filename: string;
-}
-
-export interface ComicWithChapters extends Comic {
-  chapters?: Chapter[];
 }

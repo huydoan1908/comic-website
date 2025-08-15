@@ -26,3 +26,20 @@ export function formatTimestamp(timestamp: Timestamp | { seconds: number; nanose
     minute: '2-digit'
   });
 }
+
+// Pagination utils
+export function paginate<T>(items: T[], page: number = 1, limit: number = 10) {
+  const offset = (page - 1) * limit;
+  const paginatedItems = items.slice(offset, offset + limit);
+  const totalCount = items.length;
+  const totalPages = Math.ceil(totalCount / limit);
+  const hasMore = page < totalPages;
+
+  return {
+    items: paginatedItems,
+    totalCount,
+    hasMore,
+    currentPage: page,
+    totalPages,
+  };
+}

@@ -9,7 +9,7 @@ export default function RootLayout({
   return (
     <>
       <Header />
-      <main className="flex-1 mt-15">{children}</main>
+      <main className="flex-1 mt-16">{children}</main>
       <Footer />
     </>
   );

@@ -74,7 +74,7 @@ export function ComicCarousel({ comics }: ComicCarouselProps) {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                     {/* Text Content */}
                     <div className="text-white space-y-4 md:space-y-6 order-2 lg:order-1">
-                      <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">
+                      <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight line-clamp-2">
                         {comic.title}
                       </h1>
                       
@@ -83,12 +83,7 @@ export function ComicCarousel({ comics }: ComicCarouselProps) {
                         <p><span className="font-semibold">Genre:</span> {comic.genre}</p>
                       </div>
                       
-                      <p className="text-sm md:text-base lg:text-lg leading-relaxed opacity-90 max-w-2xl overflow-hidden"
-                         style={{
-                           display: '-webkit-box',
-                           WebkitLineClamp: 3,
-                           WebkitBoxOrient: 'vertical'
-                         }}>
+                      <p className="text-sm md:text-base lg:text-lg leading-relaxed opacity-90 max-w-2xl line-clamp-1 md:line-clamp-3" >
                         {comic.description}
                       </p>
                       
@@ -104,7 +99,7 @@ export function ComicCarousel({ comics }: ComicCarouselProps) {
 
                     {/* Cover Image */}
                     <div className="flex justify-center lg:justify-end order-1 lg:order-2">
-                      <div className="relative w-48 h-64 sm:w-56 sm:h-72 md:w-64 md:h-80 lg:w-72 lg:h-96 xl:w-80 xl:h-[480px] shadow-2xl rounded-lg overflow-hidden">
+                      <div className="relative w-40 sm:w-56 md:w-64 lg:w-72 xl:w-80 aspect-3/4 shadow-2xl rounded-lg overflow-hidden">
                         <Image
                           src={comic.coverImageUrl}
                           alt={`${comic.title} cover`}

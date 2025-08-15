@@ -1,8 +1,5 @@
 import { CloudinaryResponse } from '@/types';
 
-/**
- * Upload a single file directly to Cloudinary from the client
- */
 export async function uploadToCloudinaryClient(file: File, customName?: string): Promise<string> {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
@@ -15,12 +12,10 @@ export async function uploadToCloudinaryClient(file: File, customName?: string):
   formData.append('file', file);
   formData.append('upload_preset', uploadPreset);
   
-  // Add custom public_id if provided
   if (customName) {
     formData.append('public_id', customName);
   }
 
-  // Add folder organization for comics
   formData.append('folder', 'comics');
 
   try {
@@ -46,9 +41,6 @@ export async function uploadToCloudinaryClient(file: File, customName?: string):
   }
 }
 
-/**
- * Upload multiple files to Cloudinary from the client
- */
 export async function uploadMultipleToCloudinaryClient(files: File[], fileNames?: string[]): Promise<string[]> {
   // Upload files in batches to avoid overwhelming the API
   const batchSize = 5;

@@ -34,13 +34,13 @@ export function ComicCard({ comic }: ComicCardProps) {
         </Link>
 
         <div className="p-4">
-          <Link href={`/comics/${comic.id}`} prefetch>
+          <Link href={`/comics/${comic.id}`}>
             <h3 className="font-semibold text-md text-gray-900 mb-1 line-clamp-2">
               {comic.title}
             </h3>
           </Link>
           {comic.latestChapter && (
-            <Link href={`/read/${comic.id}/${comic.latestChapter.id}`} prefetch>
+            <Link href={`/read/${comic.id}/${comic.latestChapter.id}`}>
               <p className="text-sm text-gray-900 transition-colors mb-2 cursor-pointer">
                 Chap {comic.latestChapter.number}
                 {comic.latestChapter.title ? ` - ${comic.latestChapter.title}` : ''}

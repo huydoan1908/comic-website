@@ -11,7 +11,7 @@ const sampleComics = [
     author: "Jane Smith",
     genre: "Fantasy",
     coverImageUrl: "https://placehold.co/300x400/FF6B6B/FFFFFF/JPG?text=Adventure+Begins",
-    bannerImageUrl: "https://placehold.co/400x300/FF6B6B/FFFFFF/JPG?text=Adventure+Begins",
+    bannerImageUrl: "https://placehold.co/1200x900/FF6B6B/FFFFFF/JPG?text=Adventure+Begins",
   },
   {
     title: "Space Warriors",
@@ -19,7 +19,7 @@ const sampleComics = [
     author: "Mike Johnson", 
     genre: "Sci-Fi",
     coverImageUrl: "https://placehold.co/300x400/4ECDC4/FFFFFF/JPG?text=Space+Warriors",
-    bannerImageUrl: "https://placehold.co/400x300/4ECDC4/FFFFFF/JPG?text=Space+Warriors",
+    bannerImageUrl: "https://placehold.co/1200x900/4ECDC4/FFFFFF/JPG?text=Space+Warriors",
   },
   {
     title: "High School Heroes",
@@ -27,7 +27,7 @@ const sampleComics = [
     author: "Sarah Chen",
     genre: "Superhero", 
     coverImageUrl: "https://placehold.co/300x400/45B7D1/FFFFFF/JPG?text=High+School+Heroes",
-    bannerImageUrl: "https://placehold.co/400x300/45B7D1/FFFFFF/JPG?text=High+School+Heroes",
+    bannerImageUrl: "https://placehold.co/1200x900/45B7D1/FFFFFF/JPG?text=High+School+Heroes",
   },
   {
     title: "Midnight Detective",
@@ -35,7 +35,7 @@ const sampleComics = [
     author: "Alex Rivera",
     genre: "Mystery",
     coverImageUrl: "https://placehold.co/300x400/2C3E50/FFFFFF/JPG?text=Midnight+Detective",
-    bannerImageUrl: "https://placehold.co/400x300/2C3E50/FFFFFF/JPG?text=Midnight+Detective",
+    bannerImageUrl: "https://placehold.co/1200x900/2C3E50/FFFFFF/JPG?text=Midnight+Detective",
   },
   {
     title: "Dragon's Legacy",
@@ -43,7 +43,7 @@ const sampleComics = [
     author: "Emma Wong",
     genre: "Fantasy",
     coverImageUrl: "https://placehold.co/300x400/8E44AD/FFFFFF/JPG?text=Dragons+Legacy",
-    bannerImageUrl: "https://placehold.co/400x300/8E44AD/FFFFFF/JPG?text=Dragons+Legacy",
+    bannerImageUrl: "https://placehold.co/1200x900/8E44AD/FFFFFF/JPG?text=Dragons+Legacy",
   },
   {
     title: "Cyber Punk 2090",
@@ -51,7 +51,7 @@ const sampleComics = [
     author: "Kenji Nakamura",
     genre: "Cyberpunk",
     coverImageUrl: "https://placehold.co/300x400/E67E22/FFFFFF/JPG?text=Cyber+Punk+2090",
-    bannerImageUrl: "https://placehold.co/400x300/E67E22/FFFFFF/JPG?text=Cyber+Punk+2090",
+    bannerImageUrl: "https://placehold.co/1200x900/E67E22/FFFFFF/JPG?text=Cyber+Punk+2090",
   },
   {
     title: "Love in the Library",
@@ -59,7 +59,7 @@ const sampleComics = [
     author: "Sofia Martinez",
     genre: "Romance",
     coverImageUrl: "https://placehold.co/300x400/E91E63/FFFFFF/JPG?text=Love+Library",
-    bannerImageUrl: "https://placehold.co/400x300/E91E63/FFFFFF/JPG?text=Love+Library",
+    bannerImageUrl: "https://placehold.co/1200x900/E91E63/FFFFFF/JPG?text=Love+Library",
   },
   {
     title: "Undead Rising",
@@ -67,7 +67,7 @@ const sampleComics = [
     author: "Marcus Black",
     genre: "Horror",
     coverImageUrl: "https://placehold.co/300x400/8B0000/FFFFFF/JPG?text=Undead+Rising",
-    bannerImageUrl: "https://placehold.co/400x300/8B0000/FFFFFF/JPG?text=Undead+Rising",
+    bannerImageUrl: "https://placehold.co/1200x900/8B0000/FFFFFF/JPG?text=Undead+Rising",
   },
   {
     title: "Martial Arts Master",
@@ -75,7 +75,7 @@ const sampleComics = [
     author: "Liu Wei",
     genre: "Action",
     coverImageUrl: "https://placehold.co/300x400/FF8C00/FFFFFF/JPG?text=Martial+Master",
-    bannerImageUrl: "https://placehold.co/400x300/FF8C00/FFFFFF/JPG?text=Martial+Master",
+    bannerImageUrl: "https://placehold.co/1200x900/FF8C00/FFFFFF/JPG?text=Martial+Master",
   },
   {
     title: "Time Traveler's Diary",
@@ -83,7 +83,7 @@ const sampleComics = [
     author: "Dr. Rebecca Foster",
     genre: "Sci-Fi",
     coverImageUrl: "https://placehold.co/300x400/9B59B6/FFFFFF/JPG?text=Time+Traveler",
-    bannerImageUrl: "https://placehold.co/400x300/9B59B6/FFFFFF/JPG?text=Time+Traveler",
+    bannerImageUrl: "https://placehold.co/1200x900/9B59B6/FFFFFF/JPG?text=Time+Traveler",
   },
   {
     title: "Ocean's Guardians",
@@ -91,7 +91,7 @@ const sampleComics = [
     author: "Marina Blue",
     genre: "Fantasy",
     coverImageUrl: "https://placehold.co/300x400/16A085/FFFFFF/JPG?text=Oceans+Guardians",
-    bannerImageUrl: "https://placehold.co/400x300/16A085/FFFFFF/JPG?text=Oceans+Guardians",
+    bannerImageUrl: "https://placehold.co/1200x900/16A085/FFFFFF/JPG?text=Oceans+Guardians",
   },
   {
     title: "Campus Chronicles",
@@ -99,7 +99,176 @@ const sampleComics = [
     author: "Taylor Swift",
     genre: "Slice of Life",
     coverImageUrl: "https://placehold.co/300x400/F39C12/FFFFFF/JPG?text=Campus+Chronicles",
-    bannerImageUrl: "https://placehold.co/400x300/F39C12/FFFFFF/JPG?text=Campus+Chronicles",
+    bannerImageUrl: "https://placehold.co/1200x900/F39C12/FFFFFF/JPG?text=Campus+Chronicles",
+  },
+  // Additional comics for better search testing
+  {
+    title: "Shadow Hunter Chronicles",
+    description: "In a world plagued by darkness, a lone hunter seeks to eliminate supernatural threats lurking in the shadows.",
+    author: "Viktor Shadowmane",
+    genre: "Action",
+    coverImageUrl: "https://placehold.co/300x400/1A1A1A/FFFFFF/JPG?text=Shadow+Hunter",
+    bannerImageUrl: "https://placehold.co/1200x900/1A1A1A/FFFFFF/JPG?text=Shadow+Hunter",
+  },
+  {
+    title: "Galactic Empire Wars",
+    description: "Epic space battles across multiple star systems as rebels fight against the tyrannical Galactic Empire.",
+    author: "Commander Zara",
+    genre: "Sci-Fi",
+    coverImageUrl: "https://placehold.co/300x400/483D8B/FFFFFF/JPG?text=Galactic+Wars",
+    bannerImageUrl: "https://placehold.co/1200x900/483D8B/FFFFFF/JPG?text=Galactic+Wars",
+  },
+  {
+    title: "The Enchanted Forest",
+    description: "A magical journey through an ancient forest where mythical creatures and hidden secrets await discovery.",
+    author: "Luna Starweaver",
+    genre: "Fantasy",
+    coverImageUrl: "https://placehold.co/300x400/228B22/FFFFFF/JPG?text=Enchanted+Forest",
+    bannerImageUrl: "https://placehold.co/1200x900/228B22/FFFFFF/JPG?text=Enchanted+Forest",
+  },
+  {
+    title: "Detective Storm",
+    description: "Private investigator Amanda Storm solves the most complex criminal cases in the bustling metropolis.",
+    author: "Michael Storm",
+    genre: "Mystery",
+    coverImageUrl: "https://placehold.co/300x400/4682B4/FFFFFF/JPG?text=Detective+Storm",
+    bannerImageUrl: "https://placehold.co/1200x900/4682B4/FFFFFF/JPG?text=Detective+Storm",
+  },
+  {
+    title: "Vampire Academy",
+    description: "Students at a secret academy learn to control their supernatural abilities while facing ancient enemies.",
+    author: "Bella Nightshade",
+    genre: "Horror",
+    coverImageUrl: "https://placehold.co/300x400/8B0000/FFFFFF/JPG?text=Vampire+Academy",
+    bannerImageUrl: "https://placehold.co/1200x900/8B0000/FFFFFF/JPG?text=Vampire+Academy",
+  },
+  {
+    title: "Mech Warrior Alpha",
+    description: "Giant robot battles in a post-apocalyptic world where humanity's survival depends on skilled mech pilots.",
+    author: "Steel Commander",
+    genre: "Mecha",
+    coverImageUrl: "https://placehold.co/300x400/696969/FFFFFF/JPG?text=Mech+Warrior",
+    bannerImageUrl: "https://placehold.co/1200x900/696969/FFFFFF/JPG?text=Mech+Warrior",
+  },
+  {
+    title: "Tokyo Romance",
+    description: "A beautiful love story set in modern Tokyo, following two young professionals finding love amidst busy city life.",
+    author: "Sakura Tanaka",
+    genre: "Romance",
+    coverImageUrl: "https://placehold.co/300x400/FF69B4/FFFFFF/JPG?text=Tokyo+Romance",
+    bannerImageUrl: "https://placehold.co/1200x900/FF69B4/FFFFFF/JPG?text=Tokyo+Romance",
+  },
+  {
+    title: "The Last Samurai",
+    description: "In feudal Japan, a young warrior must restore honor to his clan while mastering the ancient ways of the samurai.",
+    author: "Takeshi Yamamoto",
+    genre: "Historical",
+    coverImageUrl: "https://placehold.co/300x400/B22222/FFFFFF/JPG?text=Last+Samurai",
+    bannerImageUrl: "https://placehold.co/1200x900/B22222/FFFFFF/JPG?text=Last+Samurai",
+  },
+  {
+    title: "Street Fighter Chronicles",
+    description: "Underground fighting tournaments where martial artists from around the world compete for ultimate glory.",
+    author: "Bruce Lightning",
+    genre: "Action",
+    coverImageUrl: "https://placehold.co/300x400/FF4500/FFFFFF/JPG?text=Street+Fighter",
+    bannerImageUrl: "https://placehold.co/1200x900/FF4500/FFFFFF/JPG?text=Street+Fighter",
+  },
+  {
+    title: "Magic School Days",
+    description: "Young wizards and witches learn to master their magical abilities while forming lifelong friendships.",
+    author: "Professor Merlin",
+    genre: "Fantasy",
+    coverImageUrl: "https://placehold.co/300x400/9370DB/FFFFFF/JPG?text=Magic+School",
+    bannerImageUrl: "https://placehold.co/1200x900/9370DB/FFFFFF/JPG?text=Magic+School",
+  },
+  {
+    title: "Neon Nights",
+    description: "In a dystopian cyberpunk future, a street-smart hacker fights against corporate oppression in neon-lit streets.",
+    author: "Neo Matrix",
+    genre: "Cyberpunk",
+    coverImageUrl: "https://placehold.co/300x400/00CED1/FFFFFF/JPG?text=Neon+Nights",
+    bannerImageUrl: "https://placehold.co/1200x900/00CED1/FFFFFF/JPG?text=Neon+Nights",
+  },
+  {
+    title: "Pirate's Treasure",
+    description: "High seas adventure following Captain Blackbeard's crew as they search for the legendary lost treasure.",
+    author: "Captain Redbeard",
+    genre: "Adventure",
+    coverImageUrl: "https://placehold.co/300x400/8B4513/FFFFFF/JPG?text=Pirates+Treasure",
+    bannerImageUrl: "https://placehold.co/1200x900/8B4513/FFFFFF/JPG?text=Pirates+Treasure",
+  },
+  {
+    title: "Superhero Academy",
+    description: "Young heroes train at a prestigious academy to master their powers and protect the world from evil.",
+    author: "Hero Master",
+    genre: "Superhero",
+    coverImageUrl: "https://placehold.co/300x400/FFD700/FFFFFF/JPG?text=Hero+Academy",
+    bannerImageUrl: "https://placehold.co/1200x900/FFD700/FFFFFF/JPG?text=Hero+Academy",
+  },
+  {
+    title: "Zombie Apocalypse",
+    description: "Survivors band together in a world overrun by zombies, fighting for humanity's last hope.",
+    author: "Survival Expert",
+    genre: "Horror",
+    coverImageUrl: "https://placehold.co/300x400/556B2F/FFFFFF/JPG?text=Zombie+Apocalypse",
+    bannerImageUrl: "https://placehold.co/1200x900/556B2F/FFFFFF/JPG?text=Zombie+Apocalypse",
+  },
+  {
+    title: "Kitchen Wars",
+    description: "Culinary students compete in intense cooking battles at the world's most prestigious culinary academy.",
+    author: "Chef Supreme",
+    genre: "Slice of Life",
+    coverImageUrl: "https://placehold.co/300x400/FF6347/FFFFFF/JPG?text=Kitchen+Wars",
+    bannerImageUrl: "https://placehold.co/1200x900/FF6347/FFFFFF/JPG?text=Kitchen+Wars",
+  },
+  {
+    title: "Ancient Mysteries",
+    description: "Archaeologist Dr. Jones uncovers ancient secrets that could change our understanding of human history.",
+    author: "Dr. Indiana Jones",
+    genre: "Adventure",
+    coverImageUrl: "https://placehold.co/300x400/CD853F/FFFFFF/JPG?text=Ancient+Mysteries",
+    bannerImageUrl: "https://placehold.co/1200x900/CD853F/FFFFFF/JPG?text=Ancient+Mysteries",
+  },
+  {
+    title: "Digital Dreams",
+    description: "In a virtual reality world, players must complete dangerous quests that blur the line between game and reality.",
+    author: "VR Developer",
+    genre: "Sci-Fi",
+    coverImageUrl: "https://placehold.co/300x400/00BFFF/FFFFFF/JPG?text=Digital+Dreams",
+    bannerImageUrl: "https://placehold.co/1200x900/00BFFF/FFFFFF/JPG?text=Digital+Dreams",
+  },
+  {
+    title: "Musical Hearts",
+    description: "Two talented musicians from different backgrounds find love through their shared passion for music.",
+    author: "Melody Composer",
+    genre: "Romance",
+    coverImageUrl: "https://placehold.co/300x400/DDA0DD/FFFFFF/JPG?text=Musical+Hearts",
+    bannerImageUrl: "https://placehold.co/1200x900/DDA0DD/FFFFFF/JPG?text=Musical+Hearts",
+  },
+  {
+    title: "Sports Champions",
+    description: "Follow the journey of a high school basketball team as they work together to win the national championship.",
+    author: "Coach Victory",
+    genre: "Sports",
+    coverImageUrl: "https://placehold.co/300x400/228B22/FFFFFF/JPG?text=Sports+Champions",
+    bannerImageUrl: "https://placehold.co/1200x900/228B22/FFFFFF/JPG?text=Sports+Champions",
+  },
+  {
+    title: "Demon Slayer Chronicles",
+    description: "A young warrior inherits a cursed sword and must use it to protect humanity from demonic forces.",
+    author: "Blade Master",
+    genre: "Action",
+    coverImageUrl: "https://placehold.co/300x400/DC143C/FFFFFF/JPG?text=Demon+Slayer",
+    bannerImageUrl: "https://placehold.co/1200x900/DC143C/FFFFFF/JPG?text=Demon+Slayer",
+  },
+  {
+    title: "Space Colony Alpha",
+    description: "Colonists on a distant planet face alien threats and internal conflicts while building humanity's future.",
+    author: "Space Explorer",
+    genre: "Sci-Fi",
+    coverImageUrl: "https://placehold.co/300x400/4B0082/FFFFFF/JPG?text=Space+Colony",
+    bannerImageUrl: "https://placehold.co/1200x900/4B0082/FFFFFF/JPG?text=Space+Colony",
   }
 ];
 
@@ -281,6 +450,22 @@ export default function SetupPage() {
         }
       }
 
+      // Create at least 1 chapter for all remaining comics (indices 4 and above)
+      for (let i = 4; i < comicIds.length; i++) {
+        const defaultChapter = {
+          chapterNumber: 1,
+          title: "Chapter 1",
+          pageImageUrls: [
+            `https://placehold.co/800x1200/999999/FFFFFF/JPG?text=${encodeURIComponent(sampleComics[i].title)}+Ch1+P1`,
+            `https://placehold.co/800x1200/999999/FFFFFF/JPG?text=${encodeURIComponent(sampleComics[i].title)}+Ch1+P2`,
+            `https://placehold.co/800x1200/999999/FFFFFF/JPG?text=${encodeURIComponent(sampleComics[i].title)}+Ch1+P3`,
+            `https://placehold.co/800x1200/999999/FFFFFF/JPG?text=${encodeURIComponent(sampleComics[i].title)}+Ch1+P4`
+          ]
+        };
+        const chapterId = await chaptersService.create(comicIds[i], defaultChapter);
+        addStatus(`✅ Created chapter for "${sampleComics[i].title}": ${defaultChapter.title} (ID: ${chapterId})`);
+      }
+
       addStatus('🎉 Firestore setup complete!');
       addStatus(`📊 Created ${comicIds.length} comics with multiple chapters`);
       addStatus('📝 Note: You still need to create an admin user in Firebase Authentication');
@@ -304,12 +489,14 @@ export default function SetupPage() {
           <div className="text-yellow-700">
             <p className="mb-2">This will create sample data in your Firestore database:</p>
             <ul className="list-disc list-inside space-y-1">
-              <li>12 sample comics across various genres (Fantasy, Sci-Fi, Superhero, Mystery, etc.)</li>
+              <li>32 sample comics across various genres (Fantasy, Sci-Fi, Superhero, Mystery, Action, Romance, Horror, Cyberpunk, Adventure, Sports, Historical, Mecha, and more)</li>
               <li>3 chapters for &quot;The Adventure Begins&quot;</li>
               <li>2 chapters for &quot;Space Warriors&quot;</li>
               <li>3 chapters for &quot;High School Heroes&quot;</li>
               <li>2 chapters for &quot;Midnight Detective&quot;</li>
+              <li>1 chapter for each of the remaining 28 comics</li>
               <li>Sample pages with placeholder images for all chapters</li>
+              <li>Diverse titles, authors, and descriptions for comprehensive search testing</li>
             </ul>
             <p className="mt-3 font-medium">
               After setup, you&apos;ll need to create an admin user in Firebase Authentication manually.

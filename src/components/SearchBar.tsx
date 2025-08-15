@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useRef, useState } from "react";
 import { debounce } from "lodash";
 import { Input } from "./ui/Input";
 import { Comic } from "@/types";
@@ -17,7 +17,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   const [results, setResults] = useState<Comic[]>([]);
   const [hasMore, setHasMore] = useState(false);
 
-  const debouncedFetchSearch = useCallback(
+  const debouncedFetchSearch = useRef(
     debounce(async (query: string) => {
       setLoading(true);
       if (!query.trim() || query.length < 2) {
@@ -37,13 +37,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
       } finally {
         setLoading(false);
       }
-    }, 300),
-    [setLoading, setResults, setHasMore]
+    }, 300)
   );
 
   const handleSearch = (value: string) => {
     setSearchString(value);
-    debouncedFetchSearch(value);
+    debouncedFetchSearch.current(value);
   };
 
   const handleClose = () => {
