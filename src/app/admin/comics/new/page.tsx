@@ -89,7 +89,7 @@ export default function NewComicPage() {
       const coverImageUrl = await uploadToCloudinaryClient(coverImage, coverImageName);
 
       // Upload banner image if provided
-      let bannerImageUrl: string | undefined;
+      let bannerImageUrl = '';
       if (bannerImage) {
         const bannerImageName = `${sanitizedTitle}_banner_${currentDate}`;
         bannerImageUrl = await uploadToCloudinaryClient(bannerImage, bannerImageName);

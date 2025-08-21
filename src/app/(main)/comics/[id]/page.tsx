@@ -22,11 +22,9 @@ export default function ComicDetailPage() {
     const fetchData = async () => {
       if (params.id) {
         try {
-          // Fetch comic details
           const comicData = await comicsService.getById(params.id as string);
           setComic(comicData);
 
-          // Fetch chapters
           const chaptersData = await chaptersService.getByComicId(params.id as string, { orderBy: 'desc' });
           setChapters(chaptersData);
         } catch (error) {

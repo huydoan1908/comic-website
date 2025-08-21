@@ -105,7 +105,7 @@ export function ComicReader({ chapters, chapterNumber = 1, comicTitle, comicId }
         </div>
       ) : (
         /* Continuous View */
-        <div className="flex flex-col items-center space-y-6 px-4 mt-20">
+        <div className="flex flex-col items-center space-y-6 px-4 mt-20 mb-16">
           <div className="flex flex-col items-center space-y-6 w-full">
             {/* Chapter Pages */}
             {currentChapter.pageImageUrls.map((pageUrl, pageIndex) => (

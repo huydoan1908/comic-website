@@ -122,8 +122,8 @@ export default function EditComicPage() {
     setSubmitting(true);
 
     try {
-      let coverImageUrl = comic?.coverImageUrl;
-      let bannerImageUrl = comic?.bannerImageUrl;
+      let coverImageUrl = comic?.coverImageUrl || '';
+      let bannerImageUrl = comic?.bannerImageUrl || '';
 
       // Upload new cover image if one was selected
       if (coverImage) {
