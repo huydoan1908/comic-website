@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Comic } from "@/types";
 import { ComicGrid } from "@/components/ComicGrid";
 import { ComicCarousel } from "@/components/ComicCarousel";
@@ -18,9 +18,10 @@ export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const comicGridRef = useRef<HTMLDivElement>(null);
 
   // Fixed items per page
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 12;
 
   const fetchComics = useCallback(async () => {
     try {
@@ -87,6 +88,7 @@ export default function HomePage() {
   };
 
   const goToPage = (page: number) => {
+    comicGridRef.current?.scrollIntoView({ behavior: "smooth" });
     setCurrentPage(page);
   };
 
@@ -96,7 +98,7 @@ export default function HomePage() {
       <ComicCarousel comics={carouselComics} />
 
       {/* Comics list */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" ref={comicGridRef}>
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h2 className="text-2xl font-bold text-gray-900">

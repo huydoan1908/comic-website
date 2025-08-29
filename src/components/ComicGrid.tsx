@@ -9,8 +9,8 @@ interface ComicGridProps {
 export function ComicGrid({ comics, loading }: ComicGridProps) {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {Array.from({ length: 10 }).map((_, i) => (
+      <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-6">
+        {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="animate-pulse">
             <div className="aspect-[3/4] bg-gray-200 rounded-lg mb-4"></div>
             <div className="h-4 bg-gray-200 rounded mb-2"></div>
@@ -30,7 +30,7 @@ export function ComicGrid({ comics, loading }: ComicGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-6">
       {comics.map((comic) => (
         <ComicCard key={comic.id} comic={comic} />
       ))}

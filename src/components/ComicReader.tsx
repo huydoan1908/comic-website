@@ -76,7 +76,7 @@ export function ComicReader({ chapters, chapterNumber = 1, comicTitle, comicId }
       {/* Main Content */}
       {viewMode === "single" ? (
         /* Single Page View */
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center min-h-svh">
           <div className="relative max-w-full max-h-screen">
             <Swiper
               className="comic-reader-swiper"
