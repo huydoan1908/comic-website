@@ -13,6 +13,7 @@ A modern, full-stack web application for publishing and reading comics online, b
 ### Admin Features
 - **Comic Management**: Create, read, update, and delete comics
 - **Chapter Management**: Add chapters with multiple pages to comics
+- **Chapter Movement**: Move chapters between comics with automatic renumbering
 - **Image Upload**: Upload cover images and comic pages via Cloudinary
 - **Role-Based Access**: Secure admin dashboard with Firebase Authentication
 
@@ -156,6 +157,24 @@ This application uses a **client-side Firebase architecture** with direct servic
 - `/admin/login` - Admin login
 - `/admin/comics/new` - Create new comic
 - `/admin/comics/[id]` - Edit comic and manage chapters
+
+### Admin Features Guide
+
+#### Moving Chapters Between Comics
+
+The move chapter feature allows administrators to transfer chapters from one comic to another:
+
+1. **Access**: Navigate to the comic management page (`/admin/comics/[id]`)
+2. **Initiate Move**: Click the "Move" button next to any chapter
+3. **Select Target**: Choose the destination comic from the modal
+4. **Confirm**: Confirm the move operation
+5. **Automatic Renumbering**: The chapter will be assigned the next available chapter number in the target comic
+
+**Technical Details:**
+- Uses Firestore transactions to ensure data consistency
+- Updates timestamps on both source and target comics
+- Maintains all chapter data including images and metadata
+- Provides detailed error handling and user feedback
 
 ## Development
 

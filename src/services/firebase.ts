@@ -434,6 +434,93 @@ export const chaptersService = {
       throw new Error('Failed to delete all chapters');
     }
   },
+
+  async moveToComic(
+    sourceComicId: string, 
+    chapterId: string, 
+    targetComicId: string, 
+    newChapterNumber?: number
+  ): Promise<void> {
+    try {
+      if (!sourceComicId) {
+        throw new Error('Source comic ID is required');
+      }
+      if (!chapterId) {
+        throw new Error('Chapter ID is required');
+      }
+      if (!targetComicId) {
+        throw new Error('Target comic ID is required');
+      }
+      if (sourceComicId === targetComicId) {
+        throw new Error('Source and target comics cannot be the same');
+      }
+
+      // Verify that both comics exist
+      const [sourceComic, targetComic] = await Promise.all([
+        comicsService.getById(sourceComicId),
+        comicsService.getById(targetComicId)
+      ]);
+
+      if (!sourceComic) {
+        throw new Error('Source comic not found');
+      }
+      if (!targetComic) {
+        throw new Error('Target comic not found');
+      }
+
+      // Use transaction to ensure atomicity
+      await runTransaction(db, async (transaction) => {
+        // Get the chapter data from source comic
+        const sourceChapterRef = doc(db, 'comics', sourceComicId, 'chapters', chapterId);
+        const sourceChapterSnap = await transaction.get(sourceChapterRef);
+        
+        if (!sourceChapterSnap.exists()) {
+          throw new Error('Chapter not found');
+        }
+        
+        const chapterData = sourceChapterSnap.data();
+        
+        // Determine the new chapter number if not provided
+        let finalChapterNumber = newChapterNumber;
+        if (!finalChapterNumber) {
+          // Get the highest chapter number in target comic and add 1
+          const targetChaptersRef = collection(db, 'comics', targetComicId, 'chapters');
+          const targetChaptersQuery = query(targetChaptersRef, orderBy('chapterNumber', 'desc'));
+          const targetChaptersSnap = await getDocs(targetChaptersQuery);
+          
+          finalChapterNumber = 1;
+          if (!targetChaptersSnap.empty) {
+            const highestChapter = targetChaptersSnap.docs[0].data();
+            finalChapterNumber = highestChapter.chapterNumber + 1;
+          }
+        }
+        
+        // Create the chapter in target comic
+        const targetChapterRef = doc(collection(db, 'comics', targetComicId, 'chapters'));
+        const now = Timestamp.now();
+        
+        transaction.set(targetChapterRef, {
+          ...chapterData,
+          comicId: targetComicId,
+          chapterNumber: finalChapterNumber,
+          updatedAt: now,
+        });
+        
+        // Delete the chapter from source comic
+        transaction.delete(sourceChapterRef);
+        
+        // Update both comics' updatedAt timestamps
+        const sourceComicRef = doc(db, 'comics', sourceComicId);
+        const targetComicRef = doc(db, 'comics', targetComicId);
+        
+        transaction.update(sourceComicRef, { updatedAt: now });
+        transaction.update(targetComicRef, { updatedAt: now });
+      });
+    } catch (error) {
+      console.error('Error moving chapter:', error);
+      throw new Error(`Failed to move chapter: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
 };
 
 export const usersService = {

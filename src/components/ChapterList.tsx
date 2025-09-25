@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Edit, Trash2, Eye, BookOpen, Plus } from 'lucide-react';
+import { Edit, Trash2, Eye, BookOpen, Plus, ArrowRightLeft } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Chapter } from '@/types';
@@ -9,7 +9,9 @@ interface ChapterListProps {
   comicId: string;
   chapters: Chapter[];
   onDelete?: (chapterId: string) => void;
+  onMove?: (chapterId: string) => void;
   deleting?: string | null;
+  moving?: string | null;
   showActions?: boolean;
 }
 
@@ -17,7 +19,9 @@ export function ChapterList({
   comicId, 
   chapters, 
   onDelete, 
+  onMove,
   deleting, 
+  moving,
   showActions = true 
 }: ChapterListProps) {
   if (chapters.length === 0) {
@@ -47,7 +51,7 @@ export function ChapterList({
           {showActions ? (
             <Card className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex-shrink-0">
                       {chapter.pageImageUrls.length > 0 ? (
@@ -95,6 +99,18 @@ export function ChapterList({
                         Edit
                       </Button>
                     </Link>
+                    {onMove && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onMove(chapter.id)}
+                        disabled={moving === chapter.id}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                      >
+                        <ArrowRightLeft className="w-4 h-4 mr-2" />
+                        {moving === chapter.id ? 'Moving...' : 'Move'}
+                      </Button>
+                    )}
                     {onDelete && (
                       <Button
                         variant="outline"

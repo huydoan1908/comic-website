@@ -8,6 +8,7 @@ import { ArrowLeft, Plus, Edit, Eye, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ChapterList } from '@/components/ChapterList';
+import { ComicSelectorModal } from '@/components/ComicSelectorModal';
 import { Comic, Chapter } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { comicsService, chaptersService } from '@/services/firebase';
@@ -21,6 +22,9 @@ export default function ComicManagePage() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [moving, setMoving] = useState<string | null>(null);
+  const [showMoveModal, setShowMoveModal] = useState(false);
+  const [chapterToMove, setChapterToMove] = useState<string | null>(null);
 
   const fetchComicData = useCallback(async () => {
     try {
@@ -72,6 +76,49 @@ export default function ComicManagePage() {
     }
   };
 
+  const handleMoveChapter = (chapterId: string) => {
+    if (!isAdmin) {
+      alert('You must be an admin to move chapters');
+      return;
+    }
+
+    setChapterToMove(chapterId);
+    setShowMoveModal(true);
+  };
+
+  const handleMoveToComic = async (targetComic: Comic) => {
+    if (!chapterToMove || !isAdmin) {
+      return;
+    }
+
+    // Find the chapter being moved
+    const chapter = chapters.find(ch => ch.id === chapterToMove);
+    const chapterName = chapter 
+      ? `Chapter ${chapter.chapterNumber}${chapter.title ? `: ${chapter.title}` : ''}`
+      : 'this chapter';
+
+    if (!confirm(`Are you sure you want to move ${chapterName} to "${targetComic.title}"?\n\nThis will remove the chapter from the current comic and add it to the target comic.`)) {
+      return;
+    }
+
+    setMoving(chapterToMove);
+    try {
+      await chaptersService.moveToComic(comicId, chapterToMove, targetComic.id);
+      
+      // Refresh chapters list
+      await fetchComicData();
+      alert(`${chapterName} has been successfully moved to "${targetComic.title}"!`);
+    } catch (error) {
+      console.error('Error moving chapter:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to move chapter: ${errorMessage}`);
+    } finally {
+      setMoving(null);
+      setChapterToMove(null);
+      setShowMoveModal(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -107,7 +154,7 @@ export default function ComicManagePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
         <div className="flex items-center gap-4">
           <Link href="/admin">
             <Button variant="outline" size="sm">
@@ -137,7 +184,7 @@ export default function ComicManagePage() {
       <Card className="mb-8">
         <CardContent className="p-6">
           <div className="flex gap-6">
-            <div className="flex-shrink-0">
+            <div className="">
               <Image
                 src={comic.coverImageUrl}
                 alt={comic.title}
@@ -181,10 +228,24 @@ export default function ComicManagePage() {
           comicId={comicId}
           chapters={chapters}
           onDelete={handleDeleteChapter}
+          onMove={handleMoveChapter}
           deleting={deleting}
+          moving={moving}
           showActions={true}
         />
       </div>
+
+      {/* Move Chapter Modal */}
+      <ComicSelectorModal
+        isOpen={showMoveModal}
+        onClose={() => {
+          setShowMoveModal(false);
+          setChapterToMove(null);
+        }}
+        onSelect={handleMoveToComic}
+        currentComicId={comicId}
+        title="Move Chapter to Comic"
+      />
     </div>
   );
 }
