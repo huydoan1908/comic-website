@@ -51,7 +51,7 @@ export function ChapterList({
           {showActions ? (
             <Card className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex-shrink-0">
                       {chapter.pageImageUrls.length > 0 ? (
@@ -89,14 +89,14 @@ export function ChapterList({
                   <div className="flex items-center gap-2">
                     <Link href={`/read/${comicId}/${chapter.id}`}>
                       <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4 mr-2" />
-                        Read
+                        <Eye className="w-4 h-4" />
+                        <span className="hidden md:block ml-2">Read</span>
                       </Button>
                     </Link>
                     <Link href={`/admin/comics/${comicId}/chapters/${chapter.id}/edit`}>
                       <Button variant="outline" size="sm">
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
+                        <Edit className="w-4 h-4" />
+                        <span className="hidden md:block ml-2">Edit</span>
                       </Button>
                     </Link>
                     {onMove && (
@@ -107,8 +107,8 @@ export function ChapterList({
                         disabled={moving === chapter.id}
                         className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
                       >
-                        <ArrowRightLeft className="w-4 h-4 mr-2" />
-                        {moving === chapter.id ? 'Moving...' : 'Move'}
+                        <ArrowRightLeft className="w-4 h-4" />
+                        <span className="hidden md:block ml-2">{moving === chapter.id ? 'Moving...' : 'Move'}</span>
                       </Button>
                     )}
                     {onDelete && (
@@ -119,8 +119,8 @@ export function ChapterList({
                         disabled={deleting === chapter.id}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                       >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        {deleting === chapter.id ? 'Deleting...' : 'Delete'}
+                        <Trash2 className="w-4 h-4" />
+                        <span className="hidden md:block ml-2">{deleting === chapter.id ? 'Deleting...' : 'Delete'}</span>
                       </Button>
                     )}
                   </div>

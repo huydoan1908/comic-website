@@ -25,6 +25,8 @@ export default function ComicManagePage() {
   const [moving, setMoving] = useState<string | null>(null);
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [chapterToMove, setChapterToMove] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [saving, setSaving] = useState<string | null>(null);
 
   const fetchComicData = useCallback(async () => {
     try {
@@ -162,7 +164,7 @@ export default function ComicManagePage() {
               Back to Admin
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Comic</h1>
+          <h1 className="text-xl md:text-3xl font-bold text-gray-900">Manage Comic</h1>
         </div>
         <div className="flex gap-2">
           <Link href={`/comics/${comicId}`}>
@@ -183,7 +185,7 @@ export default function ComicManagePage() {
       {/* Comic Info */}
       <Card className="mb-8">
         <CardContent className="p-6">
-          <div className="flex gap-6">
+          <div className="flex flex-col md:flex-row gap-6">
             <div className="">
               <Image
                 src={comic.coverImageUrl}

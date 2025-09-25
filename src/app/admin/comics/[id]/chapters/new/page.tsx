@@ -39,6 +39,7 @@ export default function NewChapterPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<ChapterFormData>({
     resolver: zodResolver(chapterSchema),
@@ -50,6 +51,7 @@ export default function NewChapterPage() {
       try {
         const comicData = await comicsService.getById(comicId);
         setComic(comicData);
+        setValue("chapterNumber", (comicData?.latestChapter?.number || 0) + 1);
       } catch (error) {
         console.error("Error fetching comic:", error);
       }
