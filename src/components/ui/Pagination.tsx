@@ -84,9 +84,10 @@ export function Pagination({
               ) : (
                 <Button
                   variant={currentPage === page ? 'primary' : 'outline'}
+                  // disabled={currentPage === page}
                   size="sm"
                   onClick={() => onPageChange(page as number)}
-                  className="min-w-[40px]"
+                  className={`min-w-[40px] ${currentPage === page ? 'pointer-events-none' : 'cursor-pointer'}`}
                 >
                   {page}
                 </Button>

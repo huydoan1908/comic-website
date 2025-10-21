@@ -60,7 +60,7 @@ export default function NewChapterPage() {
     if (comicId) {
       fetchComic();
     }
-  }, [comicId]);
+  }, [comicId, setValue]);
 
   // Check admin permissions
   if (!user || !isAdmin) {
@@ -161,7 +161,8 @@ export default function NewChapterPage() {
     try {
       // Generate custom filenames in format: comicName_page_index
       const sanitizedComicName = comic.title.replace(/[^a-zA-Z0-9]/g, "_");
-      const customFilenames = pageFiles.map((_, index) => `${sanitizedComicName}_chap${data.chapterNumber}_page_${index + 1}`);
+      const sanitizedChapterName = data.title ? data.title.replace(/[^a-zA-Z0-9]/g, "_") : "Untitled";
+      const customFilenames = pageFiles.map((_, index) => `${sanitizedComicName}_chap${data.chapterNumber}_${sanitizedChapterName}_page_${index + 1}`);
 
       // Upload all page images directly to Cloudinary with custom names
       const pageImageUrls = await uploadMultipleToCloudinaryClient(pageFiles, customFilenames);
@@ -206,7 +207,7 @@ export default function NewChapterPage() {
               <label htmlFor="chapterNumber" className="block text-sm font-medium text-gray-700 mb-2">
                 Chapter Number *
               </label>
-              <Input id="chapterNumber" type="number" min="1" {...register("chapterNumber", { valueAsNumber: true })} className={errors.chapterNumber ? "border-red-500" : ""} placeholder="Enter chapter number" />
+              <Input id="chapterNumber" type="number" min="1" {...register("chapterNumber", { valueAsNumber: true })} readOnly className={errors.chapterNumber ? "border-red-500" : ""} placeholder="Enter chapter number" />
               {errors.chapterNumber && <p className="text-red-500 text-sm mt-1">{errors.chapterNumber.message}</p>}
             </div>
 

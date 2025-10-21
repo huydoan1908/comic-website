@@ -13,6 +13,7 @@ import {
   DocumentData,
   QueryDocumentSnapshot,
   runTransaction,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Comic, Chapter, User } from '@/types';
@@ -433,6 +434,18 @@ export const chaptersService = {
       console.error('Error deleting all chapters:', error);
       throw new Error('Failed to delete all chapters');
     }
+  },
+
+  async renumberChapters(comicId: string): Promise<void> {
+    const chaptersRef = collection(db, 'comics', comicId, 'chapters');
+    const snapshot = await getDocs(query(chaptersRef, orderBy('chapterNumber', 'asc')));
+    const batch = writeBatch(db);
+
+    snapshot.docs.forEach((docSnap, idx) => {
+      batch.update(docSnap.ref, { chapterNumber: idx + 1 });
+    });
+
+    await batch.commit();
   },
 
   async moveToComic(

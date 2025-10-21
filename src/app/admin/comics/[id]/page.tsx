@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Plus, Edit, Eye, BookOpen } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Eye, BookOpen, ArrowUpNarrowWide, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ChapterList } from '@/components/ChapterList';
@@ -25,8 +25,6 @@ export default function ComicManagePage() {
   const [moving, setMoving] = useState<string | null>(null);
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [chapterToMove, setChapterToMove] = useState<string | null>(null);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [saving, setSaving] = useState<string | null>(null);
 
   const fetchComicData = useCallback(async () => {
     try {
@@ -118,6 +116,28 @@ export default function ComicManagePage() {
       setMoving(null);
       setChapterToMove(null);
       setShowMoveModal(false);
+    }
+  };
+
+  const handleRenumberChapters = async () => {
+    if (!isAdmin) {
+      alert('You must be an admin to renumber chapters');
+      return;
+    }
+    if (!confirm('Are you sure you want to renumber all chapters sequentially starting from 1?')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await chaptersService.renumberChapters(comicId);
+      alert('Chapters have been renumbered successfully');
+      await fetchComicData();
+    } catch (error) {
+      console.error('Error renumbering chapters:', error);
+      alert('Failed to renumber chapters');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -224,6 +244,10 @@ export default function ComicManagePage() {
             <BookOpen className="w-5 h-5" />
             Chapters ({chapters.length})
           </h3>
+          <Button className="flex items-center gap-2" variant="outline" size="sm" onClick={handleRenumberChapters} disabled={loading}>
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUpNarrowWide />}
+            Renumber
+          </Button>
         </div>
 
         <ChapterList

@@ -7,17 +7,17 @@ import { Pagination } from "@/components/ui/Pagination";
 import { comicsService } from "@/services/firebase";
 import { useSearchParams } from "next/navigation";
 
+const ITEMS_PER_PAGE = 10;
+
 function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
+  const page = searchParams.get("page") || "1";
+  const pageNumber = parseInt(page, 10) || 1;
   const [comics, setComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-
-  // Fixed items per page
-  const ITEMS_PER_PAGE = 10;
 
   const fetchComics = useCallback(async () => {
     try {
@@ -27,13 +27,13 @@ function SearchContent() {
       if (query.trim()) {
         // Use search function when there's a search query
         result = await comicsService.search(query.trim(), {
-          page: currentPage,
+          page: pageNumber,
           limit: ITEMS_PER_PAGE,
         });
       } else {
         // Use getAll when no search query (fallback)
         result = await comicsService.getAll({
-          page: currentPage,
+          page: pageNumber,
           limit: ITEMS_PER_PAGE,
         });
       }
@@ -46,18 +46,17 @@ function SearchContent() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, query]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [query]);
+  }, [pageNumber, query]);
 
   useEffect(() => {
     fetchComics();
   }, [fetchComics]);
 
   const goToPage = (page: number) => {
-    setCurrentPage(page);
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('query', query)
+    params.set('page', page.toString())
+    window.history.pushState(null, '', `?${params.toString()}`)
   };
 
   return (
@@ -73,7 +72,7 @@ function SearchContent() {
           <ComicGrid comics={comics} loading={loading} />
 
           {/* Pagination */}
-          {!loading && totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} itemsPerPage={ITEMS_PER_PAGE} totalItems={totalItems} />}
+          {!loading && totalPages > 1 && <Pagination currentPage={pageNumber} totalPages={totalPages} onPageChange={goToPage} itemsPerPage={ITEMS_PER_PAGE} totalItems={totalItems} />}
         </div>
       </section>
 
