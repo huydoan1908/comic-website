@@ -39,18 +39,18 @@ export default function ComicDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-background py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
             <div className="flex flex-col lg:flex-row gap-8">
               <div className="lg:w-1/3">
-                <div className="aspect-[3/4] bg-gray-200 rounded-lg"></div>
+                <div className="aspect-[3/4] bg-muted rounded-xl"></div>
               </div>
               <div className="lg:w-2/3 space-y-4">
-                <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-200 rounded w-full"></div>
-                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                <div className="h-8 bg-muted rounded w-3/4"></div>
+                <div className="h-4 bg-muted rounded w-1/2"></div>
+                <div className="h-4 bg-muted rounded w-full"></div>
+                <div className="h-4 bg-muted rounded w-full"></div>
               </div>
             </div>
           </div>
@@ -61,9 +61,9 @@ export default function ComicDetailPage() {
 
   if (!comic) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Comic Not Found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Comic Not Found</h1>
           <Link href="/">
             <Button>Return Home</Button>
           </Link>
@@ -73,10 +73,10 @@ export default function ComicDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Banner Image */}
       {comic.bannerImageUrl && (
-        <div className="relative w-full max-w-[1280px] aspect-1280/600 mx-auto overflow-hidden">
+        <div className="relative w-full max-w-[1400px] aspect-1280/600 mx-auto overflow-hidden">
           <Image
             src={comic.bannerImageUrl}
             alt={`${comic.title} banner`}
@@ -84,13 +84,13 @@ export default function ComicDetailPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-black opacity-20"></div>
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-8">
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
             <div className="max-w-7xl mx-auto">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 drop-shadow-lg">
                 {comic.title}
               </h1>
-              <p className="text-white/90 text-lg max-w-2xl">
+              <p className="text-foreground/90 text-lg md:text-xl max-w-2xl drop-shadow-md line-clamp-2">
                 {comic.description}
               </p>
             </div>
@@ -98,13 +98,13 @@ export default function ComicDetailPage() {
         </div>
       )}
 
-      <div className="py-8">
+      <div className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Comic Details */}
-          <div className="flex flex-col lg:flex-row gap-8 mb-8">
+          <div className="flex flex-col lg:flex-row gap-12 mb-16">
             {/* Cover Image */}
-            <div className="lg:w-1/3">
-              <div className="aspect-[3/4] relative rounded-lg overflow-hidden shadow-lg">
+            <div className="lg:w-1/3 flex-shrink-0">
+              <div className={`aspect-[3/4] relative rounded-xl overflow-hidden shadow-2xl border-4 border-card ${comic.bannerImageUrl ? '-mt-24 lg:-mt-32 z-10' : ''}`}>
                 <Image
                   src={comic.coverImageUrl}
                   alt={comic.title}
@@ -117,43 +117,46 @@ export default function ComicDetailPage() {
 
             {/* Comic Info */}
             <div className="lg:w-2/3">
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {/* Only show title and description here if no banner */}
                 {!comic.bannerImageUrl && (
                   <div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
                       {comic.title}
                     </h1>
-                    <p className="text-gray-700 text-lg leading-relaxed mb-6">
+                    <p className="text-muted-foreground text-lg leading-relaxed mb-8">
                       {comic.description}
                     </p>
                   </div>
                 )}
                 
-                <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6">
-                  <div className="flex items-center">
-                    <User className="w-4 h-4 mr-1" />
-                    {comic.author}
+                <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+                  <div className="flex items-center px-4 py-2 bg-muted/50 rounded-full">
+                    <User className="w-4 h-4 mr-2 text-primary" />
+                    <span className="font-medium text-foreground">{comic.author}</span>
                   </div>
-                  <div className="flex items-center">
-                    <Tag className="w-4 h-4 mr-1" />
-                    {comic.genre}
+                  <div className="flex items-center px-4 py-2 bg-muted/50 rounded-full">
+                    <Tag className="w-4 h-4 mr-2 text-primary" />
+                    <span className="font-medium text-foreground">{comic.genre}</span>
                   </div>
-                  <div className="flex items-center">
-                    <BookOpen className="w-4 h-4 mr-1" />
-                    {chapters.length} chapters
+                  <div className="flex items-center px-4 py-2 bg-muted/50 rounded-full">
+                    <BookOpen className="w-4 h-4 mr-2 text-primary" />
+                    <span className="font-medium text-foreground">{chapters.length} chapters</span>
                   </div>
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-1" />
-                    {timestampToDate(comic.createdAt).toLocaleDateString()}
+                  <div className="flex items-center px-4 py-2 bg-muted/50 rounded-full">
+                    <Clock className="w-4 h-4 mr-2 text-primary" />
+                    <span className="font-medium text-foreground">{timestampToDate(comic.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
 
                 {/* Show description here if banner exists */}
                 {comic.bannerImageUrl && (
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-3">About this Comic</h2>
-                    <p className="text-gray-700 text-lg leading-relaxed">
+                  <div className="bg-card/50 p-6 rounded-xl border border-border">
+                    <h2 className="text-xl font-semibold text-foreground mb-3 flex items-center">
+                      <span className="w-1 h-6 bg-primary rounded-full mr-3"></span>
+                      About this Comic
+                    </h2>
+                    <p className="text-muted-foreground text-lg leading-relaxed">
                       {comic.description}
                     </p>
                   </div>
@@ -161,10 +164,10 @@ export default function ComicDetailPage() {
 
                 {/* Start Reading Button */}
                 {chapters.length > 0 && (
-                  <div>
-                    <Link href={`/read/${comic.id}/${chapters[chapters.length - 1].id}`}>
-                      <Button size="lg" className="w-full sm:w-auto">
-                        <BookOpen className="w-5 h-5 mr-2" />
+                  <div className="flex gap-4">
+                    <Link href={`/read/${comic.id}/${chapters[chapters.length - 1].id}`} className="flex-1 sm:flex-none">
+                      <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6 rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-0.5">
+                        <BookOpen className="w-6 h-6 mr-2" />
                         Read First Chapter
                       </Button>
                     </Link>
@@ -175,18 +178,17 @@ export default function ComicDetailPage() {
           </div>
 
           {/* Chapters List */}
-          <Card>
-            <CardHeader>
-              <h2 className="text-2xl font-bold text-gray-900">Chapters</h2>
-            </CardHeader>
-            <CardContent>
-              <ChapterList
-                comicId={comic.id}
-                chapters={chapters}
-                showActions={false}
-              />
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-foreground flex items-center">
+              <span className="w-8 h-1 bg-primary rounded-full mr-3"></span>
+              Chapters
+            </h2>
+            <ChapterList
+              comicId={comic.id}
+              chapters={chapters}
+              showActions={false}
+            />
+          </div>
         </div>
       </div>
     </div>

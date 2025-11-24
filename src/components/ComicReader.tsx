@@ -163,27 +163,27 @@ export function ComicReader({ chapters, chapterNumber = 1, comicTitle, comicId }
       {/* Chapter List Modal */}
       {showChapterList && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="bg-black/80 absolute inset-0" onClick={() => setShowChapterList(false)} />
-          <div className="relative z-1 bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-semibold">Chapters</h2>
-              <Button variant="outline" size="sm" onClick={() => setShowChapterList(false)}>
+          <div className="bg-black/80 backdrop-blur-sm absolute inset-0" onClick={() => setShowChapterList(false)} />
+          <div className="relative z-10 bg-card border border-border rounded-xl max-w-md w-full max-h-[80vh] overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b border-border bg-muted/20">
+              <h2 className="text-lg font-semibold text-foreground">Chapters</h2>
+              <Button variant="outline" size="sm" onClick={() => setShowChapterList(false)} className="h-8 w-8 p-0 rounded-full">
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            <div className="overflow-y-auto max-h-96">
+            <div className="overflow-y-auto max-h-96 custom-scrollbar">
               {chapters.map((chapter, index) =>
                 index === chapterNumber - 1 ? (
-                  <div key={chapter.id} className={`block w-full text-left p-4 border-b transition-colors bg-gray-200`}>
-                    <div className="font-medium text-gray-500">Chapter {chapter.chapterNumber}</div>
-                    {chapter.title && <div className="text-sm text-gray-400">{chapter.title}</div>}
-                    <div className="text-xs text-gray-400">{chapter.pageImageUrls.length} pages</div>
+                  <div key={chapter.id} className="block w-full text-left p-4 border-b border-border transition-colors bg-primary/10">
+                    <div className="font-medium text-primary">Chapter {chapter.chapterNumber}</div>
+                    {chapter.title && <div className="text-sm text-primary/80">{chapter.title}</div>}
+                    <div className="text-xs text-primary/60 mt-1">{chapter.pageImageUrls.length} pages</div>
                   </div>
                 ) : (
-                  <Link key={chapter.id} href={getChapterUrl(index)} className="block w-full text-left p-4 hover:bg-gray-100 border-b transition-colors">
-                    <div className="font-medium">Chapter {chapter.chapterNumber}</div>
-                    {chapter.title && <div className="text-sm text-gray-600">{chapter.title}</div>}
-                    <div className="text-xs text-gray-500">{chapter.pageImageUrls.length} pages</div>
+                  <Link key={chapter.id} href={getChapterUrl(index)} className="block w-full text-left p-4 hover:bg-muted/50 border-b border-border transition-colors group">
+                    <div className="font-medium text-foreground group-hover:text-primary transition-colors">Chapter {chapter.chapterNumber}</div>
+                    {chapter.title && <div className="text-sm text-muted-foreground">{chapter.title}</div>}
+                    <div className="text-xs text-muted-foreground/60 mt-1">{chapter.pageImageUrls.length} pages</div>
                   </Link>
                 )
               )}

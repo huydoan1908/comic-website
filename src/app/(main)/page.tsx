@@ -93,30 +93,30 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Carousel Hero Section */}
       <ComicCarousel comics={carouselComics} />
 
       {/* Comics list */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" ref={comicGridRef}>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" ref={comicGridRef}>
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <h2 className="text-3xl font-bold text-foreground tracking-tight">
               {selectedGenre ? (
                 <>
-                  {selectedGenre} Comics ({totalItems})
+                  {selectedGenre} Comics <span className="text-muted-foreground text-lg font-normal">({totalItems})</span>
                 </>
               ) : (
-                <>All Comics ({totalItems})</>
+                <>Latest Updates <span className="text-muted-foreground text-lg font-normal">({totalItems})</span></>
               )}
             </h2>
           </div>
 
           {genres.length > 0 && (
-            <div className="mb-8">
+            <div className="mb-10">
               <div className="flex items-center mb-4">
-                <Filter className="w-5 h-5 mr-2 text-gray-600" />
-                <span className="font-medium text-gray-700">Filter by Genre:</span>
+                <Filter className="w-5 h-5 mr-2 text-muted-foreground" />
+                <span className="font-medium text-muted-foreground">Filter by Genre:</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button variant={selectedGenre === "" ? "primary" : "outline"} size="sm" onClick={() => setSelectedGenre("")}>
@@ -140,9 +140,9 @@ export default function HomePage() {
       {/* Call to Action */}
       {!loading && comics.length === 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <div className="bg-white rounded-lg shadow-lg p-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">No Comics Available Yet</h2>
-            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">It looks like there aren&apos;t any comics published yet. Check back soon for amazing content!</p>
+          <div className="bg-card border border-border rounded-xl p-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">No Comics Available Yet</h2>
+            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">It looks like there aren&apos;t any comics published yet. Check back soon for amazing content!</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg">Contact Support</Button>
               <Button variant="outline" size="lg">
