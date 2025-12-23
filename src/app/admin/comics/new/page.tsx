@@ -118,12 +118,12 @@ export default function NewComicPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <Link href="/admin" className="inline-flex items-center text-gray-700 hover:text-gray-900 mb-4">
+        <Link href="/admin" className="inline-flex items-center text-primary-foreground hover:text-primary-foreground mb-4">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Dashboard
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Add New Comic</h1>
-        <p className="text-gray-600 mt-2">Create a new comic series</p>
+        <h1 className="text-3xl font-bold text-primary-foreground">Add New Comic</h1>
+        <p className="text-muted-foreground mt-2">Create a new comic series</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -147,10 +147,10 @@ export default function NewComicPage() {
                       />
                     </div>
                   ) : (
-                    <div className="aspect-[3/4] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                    <div className="aspect-[3/4] border-2 border-dashed border-muted-foreground rounded-lg flex items-center justify-center">
                       <div className="text-center">
-                        <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                        <p className="mt-2 text-sm text-gray-600">Upload cover image</p>
+                        <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                        <p className="mt-2 text-sm text-muted-foreground">Upload cover image</p>
                       </div>
                     </div>
                   )}
@@ -188,10 +188,10 @@ export default function NewComicPage() {
                         />
                       </div>
                     ) : (
-                      <div className="aspect-[21/9] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                      <div className="aspect-[21/9] border-2 border-dashed border-muted-foreground rounded-lg flex items-center justify-center">
                         <div className="text-center">
-                          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                          <p className="mt-2 text-sm text-gray-600">Upload banner image</p>
+                          <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                          <p className="mt-2 text-sm text-muted-foreground">Upload banner image</p>
                         </div>
                       </div>
                     )}

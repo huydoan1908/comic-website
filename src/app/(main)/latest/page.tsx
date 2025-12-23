@@ -7,11 +7,10 @@ import { Pagination } from "@/components/ui/Pagination";
 import { comicsService } from "@/services/firebase";
 import { useSearchParams } from "next/navigation";
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 18;
 
-function SearchContent() {
+function LatestContent() {
   const searchParams = useSearchParams();
-  const query = searchParams.get("query") || "";
   const page = searchParams.get("page") || "1";
   const pageNumber = parseInt(page, 10) || 1;
   const [comics, setComics] = useState<Comic[]>([]);
@@ -23,20 +22,10 @@ function SearchContent() {
     try {
       setLoading(true);
       
-      let result;
-      if (query.trim()) {
-        // Use search function when there's a search query
-        result = await comicsService.search(query.trim(), {
-          page: pageNumber,
-          limit: ITEMS_PER_PAGE,
-        });
-      } else {
-        // Use getAll when no search query (fallback)
-        result = await comicsService.getAll({
-          page: pageNumber,
-          limit: ITEMS_PER_PAGE,
-        });
-      }
+      let result = await comicsService.getAll({
+        page: pageNumber,
+        limit: ITEMS_PER_PAGE,
+      });
 
       setComics(result.comics);
       setTotalPages(result.totalPages);
@@ -46,7 +35,7 @@ function SearchContent() {
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, query]);
+  }, [pageNumber]);
 
   useEffect(() => {
     fetchComics();
@@ -54,7 +43,6 @@ function SearchContent() {
 
   const goToPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
-    params.set('query', query)
     params.set('page', page.toString())
     window.history.pushState(null, '', `?${params.toString()}`)
   };
@@ -66,7 +54,7 @@ function SearchContent() {
         {/* Search Results or All Comics */}
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <h2 className="text-2xl font-bold text-primary-foreground">Result for &quot;{query}&quot;</h2>
+            <h2 className="text-2xl font-bold text-primary-foreground">Latest Comics</h2>
           </div>
 
           <ComicGrid comics={comics} loading={loading} />
@@ -91,7 +79,7 @@ function SearchContent() {
 export default function SearchPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
-      <SearchContent />
+      <LatestContent />
     </Suspense>
   );
 }

@@ -179,7 +179,7 @@ export default function EditComicPage() {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Comic Not Found</h1>
+          <h1 className="text-2xl font-bold text-primary-foreground mb-4">Comic Not Found</h1>
           <Link href="/admin">
             <Button variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -201,7 +201,7 @@ export default function EditComicPage() {
             Back to Comic
           </Button>
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Edit Comic</h1>
+        <h1 className="text-3xl font-bold text-primary-foreground">Edit Comic</h1>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -212,65 +212,48 @@ export default function EditComicPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Title *
-              </label>
               <Input
                 id="title"
+                label="Title *"
                 {...register('title')}
-                className={errors.title ? 'border-red-500' : ''}
                 placeholder="Enter comic title"
+                error={errors.title?.message}
               />
-              {errors.title && (
-                <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
-              )}
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                Description *
-              </label>
               <Textarea
                 id="description"
+                label="Description *"
                 {...register('description')}
                 className={errors.description ? 'border-red-500' : ''}
                 placeholder="Enter comic description"
                 rows={4}
+                error={errors.description?.message}
               />
-              {errors.description && (
-                <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
-              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-2">
-                  Author *
-                </label>
                 <Input
                   id="author"
+                  label="Author *"
                   {...register('author')}
                   className={errors.author ? 'border-red-500' : ''}
                   placeholder="Enter author name"
+                  error={errors.author?.message}
                 />
-                {errors.author && (
-                  <p className="text-red-500 text-sm mt-1">{errors.author.message}</p>
-                )}
               </div>
 
               <div>
-                <label htmlFor="genre" className="block text-sm font-medium text-gray-700 mb-2">
-                  Genre *
-                </label>
                 <Input
                   id="genre"
+                  label="Genre *"
                   {...register('genre')}
                   className={errors.genre ? 'border-red-500' : ''}
                   placeholder="Enter genre"
+                  error={errors.genre?.message}
                 />
-                {errors.genre && (
-                  <p className="text-red-500 text-sm mt-1">{errors.genre.message}</p>
-                )}
               </div>
             </div>
           </CardContent>
@@ -284,7 +267,7 @@ export default function EditComicPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-primary-foreground mb-2">
                   Current Cover
                 </label>
                 {imagePreview && (
@@ -301,15 +284,15 @@ export default function EditComicPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-primary-foreground mb-2">
                   Upload New Cover (Optional)
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-gray-400 transition-colors">
                   <div className="text-center">
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <Upload className="w-12 h-12 text-primary-foreground mx-auto mb-4" />
                     <label htmlFor="coverImage" className="cursor-pointer">
-                      <span className="text-lg font-medium text-gray-900">Click to upload</span>
-                      <p className="text-gray-600 mt-1">PNG, JPG, GIF up to 10MB</p>
+                      <span className="text-lg font-medium text-primary-foreground">Click to upload</span>
+                      <p className="text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB</p>
                     </label>
                     <input
                       id="coverImage"
@@ -333,7 +316,7 @@ export default function EditComicPage() {
           <CardContent className="space-y-4">
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-primary-foreground mb-2">
                   Current Banner
                 </label>
                 {bannerPreview ? (
@@ -347,20 +330,20 @@ export default function EditComicPage() {
                     />
                   </div>
                 ) : (
-                  <p className="text-gray-500 italic">No banner image set</p>
+                  <p className="text-muted-foreground italic">No banner image set</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-primary-foreground mb-2">
                   Upload New Banner (Optional)
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-gray-400 transition-colors">
                   <div className="text-center">
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                     <label htmlFor="bannerImage" className="cursor-pointer">
-                      <span className="text-lg font-medium text-gray-900">Click to upload</span>
-                      <p className="text-gray-600 mt-1">PNG, JPG, GIF up to 10MB (Wide aspect ratio recommended)</p>
+                      <span className="text-lg font-medium text-primary-foreground">Click to upload</span>
+                      <p className="text-muted-foreground mt-1">PNG, JPG, GIF up to 10MB (Wide aspect ratio recommended)</p>
                     </label>
                     <input
                       id="bannerImage"

@@ -193,7 +193,7 @@ export default function EditChapterPage() {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Chapter Not Found</h1>
+          <h1 className="text-2xl font-bold text-primary-foreground mb-4">Chapter Not Found</h1>
           <Link href={`/admin/comics/${comicId}`}>
             <Button variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -215,7 +215,7 @@ export default function EditChapterPage() {
             Back to Comic
           </Button>
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-primary-foreground">
           Edit Chapter {chapter.chapterNumber}
         </h1>
       </div>
@@ -228,11 +228,9 @@ export default function EditChapterPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label htmlFor="chapterNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                Chapter Number *
-              </label>
               <Input
                 id="chapterNumber"
+                label="Chapter Number *"
                 type="number"
                 min="1"
                 {...register('chapterNumber', { valueAsNumber: true })}
@@ -244,11 +242,9 @@ export default function EditChapterPage() {
             </div>
 
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Chapter Title (Optional)
-              </label>
               <Input
                 id="title"
+                label="Chapter Title (Optional)"
                 {...register('title')}
                 placeholder="Enter chapter title"
               />
@@ -260,7 +256,7 @@ export default function EditChapterPage() {
         <Card>
           <CardHeader>
             <h2 className="text-xl font-semibold">Current Pages</h2>
-            <p className="text-gray-600">Manage existing pages. You can reorder, delete, or add new pages.</p>
+            <p className="text-muted-foreground">Manage existing pages. You can reorder, delete, or add new pages.</p>
           </CardHeader>
           <CardContent>
             {existingPages.length > 0 ? (
@@ -278,12 +274,12 @@ export default function EditChapterPage() {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="absolute top-2 right-2 flex gap-1">
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
                         onClick={() => moveExistingPage(index, index - 1)}
                         disabled={index === 0}
-                        className="bg-gray-700 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-30"
+                        className="bg-gray-700 text-white rounded p-1 disabled:opacity-30"
                         title="Move up"
                       >
                         <ChevronLeft className="w-3 h-3" />
@@ -292,7 +288,7 @@ export default function EditChapterPage() {
                         type="button"
                         onClick={() => moveExistingPage(index, index + 1)}
                         disabled={index === existingPages.length - 1}
-                        className="bg-gray-700 text-white rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-30"
+                        className="bg-gray-700 text-white rounded p-1 disabled:opacity-30"
                         title="Move down"
                       >
                         <ChevronRight className="w-3 h-3" />
@@ -300,7 +296,7 @@ export default function EditChapterPage() {
                       <button
                         type="button"
                         onClick={() => toggleDeleteExistingPage(index)}
-                        className={`rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        className={`rounded p-1 ${
                           pagesToDelete.includes(index)
                             ? 'bg-green-500 text-white'
                             : 'bg-red-500 text-white'
@@ -310,7 +306,7 @@ export default function EditChapterPage() {
                         <X className="w-3 h-3" />
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1 text-center">
+                    <p className="text-xs text-muted-foreground mt-1 text-center">
                       Page {index + 1}
                       {pagesToDelete.includes(index) && (
                         <span className="text-red-500 ml-1">(Will be deleted)</span>
@@ -320,7 +316,7 @@ export default function EditChapterPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-8">No pages in this chapter</p>
+              <p className="text-muted-foreground text-center py-8">No pages in this chapter</p>
             )}
           </CardContent>
         </Card>
@@ -329,17 +325,17 @@ export default function EditChapterPage() {
         <Card>
           <CardHeader>
             <h2 className="text-xl font-semibold">Add New Pages</h2>
-            <p className="text-gray-600">Upload additional pages to add to this chapter.</p>
+            <p className="text-muted-foreground">Upload additional pages to add to this chapter.</p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-gray-400 transition-colors">
                 <div className="text-center">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <label htmlFor="newPageFiles" className="cursor-pointer">
-                    <span className="text-lg font-medium text-gray-900">Click to upload new pages</span>
-                    <p className="text-gray-600 mt-1">or drag and drop</p>
-                    <p className="text-xs text-gray-500 mt-2">PNG, JPG, GIF up to 10MB each</p>
+                    <span className="text-lg font-medium text-primary-foreground">Click to upload new pages</span>
+                    <p className="text-muted-foreground mt-1">or drag and drop</p>
+                    <p className="text-xs text-muted-foreground mt-2">PNG, JPG, GIF up to 10MB each</p>
                   </label>
                   <input
                     id="newPageFiles"

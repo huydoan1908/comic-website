@@ -52,13 +52,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className={`fixed inset-0 z-20 overflow-hidden transition-all duration-300 ${isOpen ? "max-h-screen" : "max-h-0"}`}>
+    <div className={`fixed inset-0 z-100 overflow-hidden transition-all duration-300 ${isOpen ? "max-h-screen" : "max-h-0"}`}>
       {/* Search overlay */}
       <div className="absolute inset-0 bg-black/30 shadow-md" onClick={handleClose}></div>
       {/* Search bar container */}
       <div className="relative z-20">
         {/* Search bar */}
-        <div className="flex justify-center bg-white p-4 z-10">
+        <div className="flex justify-center bg-background p-4 z-10">
           <div className="w-full max-w-4xl">
             <Input type="text" value={searchString} onChange={(e) => handleSearch(e.target.value)} placeholder="Search comics..." />
           </div>
@@ -66,22 +66,22 @@ const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
 
         {/* Search Results */}
         {searchString.length > 1 && (
-          <div className="bg-white p-4 z-10">
+          <div className="bg-background p-4 z-10">
             {results.length > 0 ? (
               <div className="max-w-4xl mx-auto">
                 {results.map((comic) => (
                   <Link key={comic.id} href={`/comics/${comic.id}`} onClick={handleClose} prefetch>
-                    <div className="flex gap-2 p-2 border-b border-gray-200 hover:bg-gray-100">
+                    <div className="flex gap-2 p-2 border-b border-border hover:bg-border">
                       <Image src={comic.coverImageUrl} alt={comic.title} width={50} height={100} />
                       <div className="flex flex-col justify-center">
-                        <span className="text-sm font-bold text-gray-900">{comic.title}</span>
-                        <span className="text-xs font-medium text-gray-600">{comic.author}</span>
+                        <span className="text-sm font-bold text-primary-foreground">{comic.title}</span>
+                        <span className="text-xs font-medium text-text-muted-foreground">{comic.author}</span>
                       </div>
                     </div>
                   </Link>
                 ))}
                 {hasMore && (
-                  <Link href={`/search?query=${searchString}`} onClick={handleClose} className="p-2 block text-sm font-medium text-gray-900 hover:bg-gray-100" prefetch>
+                  <Link href={`/search?query=${searchString}`} onClick={handleClose} className="p-2 block text-sm font-medium text-primary-foreground hover:bg-border" prefetch>
                     See all results for {searchString}
                   </Link>
                 )}

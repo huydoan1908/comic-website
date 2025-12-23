@@ -43,9 +43,9 @@ export function ComicCard({ comic }: ComicCardProps) {
           {comic.latestChapter && (
             <Link href={`/read/${comic.id}/${comic.latestChapter.id}`}>
               <p className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" />
-                Chap {comic.latestChapter.number}
-                <span className="hidden md:inline opacity-70">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block flex-shrink-0" />
+                <span className="font-bold whitespace-nowrap flex-shrink-0">Chap {comic.latestChapter.number}</span>
+                <span className="hidden md:inline opacity-70 text-ellipsis overflow-hidden whitespace-nowrap">
                   {comic.latestChapter.title ? ` - ${comic.latestChapter.title}` : ''}
                 </span>
               </p>

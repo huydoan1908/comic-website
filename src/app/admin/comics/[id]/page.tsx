@@ -184,7 +184,7 @@ export default function ComicManagePage() {
               Back to Admin
             </Button>
           </Link>
-          <h1 className="text-xl md:text-3xl font-bold text-gray-900">Manage Comic</h1>
+          <h1 className="text-xl md:text-3xl font-bold text-primary-foreground">Manage Comic</h1>
         </div>
         <div className="flex gap-2">
           <Link href={`/comics/${comicId}`}>
@@ -216,11 +216,11 @@ export default function ComicManagePage() {
               />
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{comic.title}</h2>
-              <p className="text-gray-600 mb-2">
+              <h2 className="text-2xl font-bold text-primary-foreground mb-2">{comic.title}</h2>
+              <p className="text-muted-foreground mb-2">
                 <span className="font-medium">Author:</span> {comic.author}
               </p>
-              <p className="text-gray-600 mb-2">
+              <p className="text-muted-foreground mb-2">
                 <span className="font-medium">Genre:</span> {comic.genre}
               </p>
               <p className="text-gray-700 mb-4">{comic.description}</p>
@@ -240,7 +240,7 @@ export default function ComicManagePage() {
       {/* Chapters Section */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <h3 className="text-xl font-bold text-primary-foreground flex items-center gap-2">
             <BookOpen className="w-5 h-5" />
             Chapters ({chapters.length})
           </h3>

@@ -55,7 +55,7 @@ export function Pagination({
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between gap-4 py-6">
       {/* Items info */}
-      <div className="text-sm text-gray-700 order-2 lg:order-1">
+      <div className="text-sm text-muted-foreground order-2 lg:order-1">
         Showing <span className="font-medium">{startItem}</span> to{' '}
         <span className="font-medium">{endItem}</span> of{' '}
         <span className="font-medium">{totalItems}</span> results

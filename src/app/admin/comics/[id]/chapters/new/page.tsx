@@ -193,7 +193,7 @@ export default function NewChapterPage() {
             Back to Comic
           </Button>
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Add New Chapter</h1>
+        <h1 className="text-3xl font-bold text-primary-foreground">Add New Chapter</h1>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -204,18 +204,11 @@ export default function NewChapterPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label htmlFor="chapterNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                Chapter Number *
-              </label>
-              <Input id="chapterNumber" type="number" min="1" {...register("chapterNumber", { valueAsNumber: true })} readOnly className={errors.chapterNumber ? "border-red-500" : ""} placeholder="Enter chapter number" />
-              {errors.chapterNumber && <p className="text-red-500 text-sm mt-1">{errors.chapterNumber.message}</p>}
+              <Input id="chapterNumber" label="Chapter Number *" error={errors.chapterNumber?.message} type="number" min="1" {...register("chapterNumber", { valueAsNumber: true })} readOnly placeholder="Enter chapter number" />
             </div>
 
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Chapter Title (Optional)
-              </label>
-              <Input id="title" {...register("title")} placeholder="Enter chapter title" />
+              <Input id="title" label="Chapter Title (Optional)" {...register("title")} placeholder="Enter chapter title" />
             </div>
           </CardContent>
         </Card>
@@ -224,19 +217,19 @@ export default function NewChapterPage() {
         <Card>
           <CardHeader>
             <h2 className="text-xl font-semibold">Chapter Pages</h2>
-            <p className="text-gray-600">Upload images or PDF files for this chapter. Pages will be displayed in the order you upload them.</p>
+            <p className="text-primary-foreground">Upload images or PDF files for this chapter. Pages will be displayed in the order you upload them.</p>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Upload Options */}
             <div className="grid md:grid-cols-2 gap-4">
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Upload Individual Images</label>
+                <label className="block text-sm font-medium text-primary-foreground mb-2">Upload Individual Images</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
                   <div className="text-center">
                     <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                     <label htmlFor="imageFiles" className="cursor-pointer">
-                      <span className="text-sm font-medium text-gray-900">Upload Images</span>
+                      <span className="text-sm font-medium text-primary-foreground">Upload Images</span>
                       <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB each</p>
                     </label>
                     <input id="imageFiles" type="file" multiple accept="image/*" onChange={handlePageFilesChange} className="hidden" />
@@ -246,12 +239,12 @@ export default function NewChapterPage() {
 
               {/* PDF Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Upload PDF File</label>
+                <label className="block text-sm font-medium text-primary-foreground mb-2">Upload PDF File</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
                   <div className="text-center">
                     <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                     <label htmlFor="pdfFiles" className="cursor-pointer">
-                      <span className="text-sm font-medium text-gray-900">Upload PDF</span>
+                      <span className="text-sm font-medium text-primary-foreground">Upload PDF</span>
                       <p className="text-xs text-gray-500 mt-1">PDF files will be split into pages</p>
                     </label>
                     <input id="pdfFiles" type="file" multiple accept=".pdf,application/pdf" onChange={handlePageFilesChange} className="hidden" />

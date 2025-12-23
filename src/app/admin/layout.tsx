@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted || loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-600"></div>
       </div>
     );
@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // Allow login page to render even when not authenticated
   if (pathname === "/admin/login") {
-    return <div className="min-h-screen bg-gray-100">{children}</div>;
+    return <div className="min-h-screen bg-background">{children}</div>;
   }
 
   // Block other admin pages if not authenticated or not admin
@@ -52,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-100 mt-15">{children}</div>
+      <div className="min-h-screen bg-background mt-15">{children}</div>
       <Footer />
     </>
   );

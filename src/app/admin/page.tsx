@@ -89,8 +89,8 @@ export default function AdminDashboard() {
       <div className="mb-8">
         <div className="flex justify-between items-start md:flex-row flex-col gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-2">Manage your comics and chapters</p>
+            <h1 className="text-3xl font-bold text-primary-foreground">Admin Dashboard</h1>
+            <p className="text-muted-foreground mt-2">Manage your comics and chapters</p>
           </div>
           <div className="flex gap-3">
             <Link href="/admin/comics/new">
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
             </div>
 
             {debouncedSearchTerm && (
-              <div className="mt-4 text-sm text-gray-600">
+              <div className="mt-4 text-sm text-muted-foreground">
                 Found {totalItems} comics matching &quot;{debouncedSearchTerm}&quot;
                 <Button variant="outline" size="sm" onClick={() => setSearchTerm("")} className="ml-2 text-xs">
                   Clear search
@@ -131,8 +131,8 @@ export default function AdminDashboard() {
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center md:flex-row flex-col">
-            <h2 className="text-xl font-semibold text-gray-900">Comics</h2>
-            <div className="text-sm text-gray-600">Click &ldquo;Manage&rdquo; to add and edit chapters</div>
+            <h2 className="text-xl font-semibold text-primary-foreground">Comics</h2>
+            <div className="text-sm text-muted-foreground">Click &ldquo;Manage&rdquo; to add and edit chapters</div>
           </div>
         </CardHeader>
         <CardContent>
@@ -140,10 +140,10 @@ export default function AdminDashboard() {
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="animate-pulse flex items-center space-x-4 p-4">
-                  <div className="w-16 h-20 bg-gray-200 rounded"></div>
+                  <div className="w-16 h-20 bg-background rounded"></div>
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-background rounded w-1/3"></div>
+                    <div className="h-3 bg-background rounded w-1/2"></div>
                   </div>
                 </div>
               ))}
@@ -152,9 +152,9 @@ export default function AdminDashboard() {
             <div className="text-center py-8">
               {debouncedSearchTerm ? (
                 <>
-                  <Search className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">No comics found</h3>
-                  <p className="mt-1 text-sm text-gray-500">No comics match your search for &quot;{debouncedSearchTerm}&quot;</p>
+                  <Search className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <h3 className="mt-2 text-sm font-medium text-primary-foreground">No comics found</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">No comics match your search for &quot;{debouncedSearchTerm}&quot;</p>
                   <div className="mt-6">
                     <Button variant="outline" onClick={() => setSearchTerm("")}>
                       Clear search
@@ -163,9 +163,9 @@ export default function AdminDashboard() {
                 </>
               ) : (
                 <>
-                  <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">No comics</h3>
-                  <p className="mt-1 text-sm text-gray-500">Get started by creating a new comic.</p>
+                  <BookOpen className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <h3 className="mt-2 text-sm font-medium text-primary-foreground">No comics</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Get started by creating a new comic.</p>
                   <div className="mt-6">
                     <Link href="/admin/comics/new">
                       <Button>
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
             <>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-background divide-y divide-border">
                     {comics.map((comic: Comic) => (
                       <tr key={comic.id}>
                         <td className="px-6 py-4">
@@ -190,8 +190,8 @@ export default function AdminDashboard() {
                               <Image className="h-16 w-12 object-cover rounded" src={comic.coverImageUrl} alt={comic.title} fill sizes="48px" />
                             </div>
                             <div className="ml-4 min-w-0 flex-1 max-w-xs">
-                              <div className="text-sm font-medium text-gray-900 truncate">{comic.title}</div>
-                              <div className="text-xs text-gray-500 mt-1">
+                              <div className="text-sm font-medium text-primary-foreground truncate">{comic.title}</div>
+                              <div className="text-xs text-muted-foreground mt-1">
                                 {comic.author} • {comic.genre}
                               </div>
                             </div>

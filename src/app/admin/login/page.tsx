@@ -32,17 +32,17 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <Card>
           <CardHeader className="text-center">
-            <div className="mx-auto h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center">
-              <Lock className="h-6 w-6 text-gray-700" />
+            <div className="mx-auto h-12 w-12 bg-background rounded-full flex items-center justify-center">
+              <Lock className="h-6 w-6 text-muted-foreground" />
             </div>
-            <h2 className="mt-4 text-2xl font-bold text-gray-900">
+            <h2 className="mt-4 text-2xl font-bold text-primary-foreground">
               Admin Login
             </h2>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Sign in to access the admin dashboard
             </p>
           </CardHeader>
