@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { Comic, Chapter } from '@/types';
 import { timestampToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { ChapterList } from '@/components/ChapterList';
 import { comicsService, chaptersService } from '@/services/firebase';
 import { BookOpen, User, Tag, Clock } from 'lucide-react';

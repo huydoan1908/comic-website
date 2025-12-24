@@ -22,7 +22,7 @@ function LatestContent() {
     try {
       setLoading(true);
       
-      let result = await comicsService.getAll({
+      const result = await comicsService.getAll({
         page: pageNumber,
         limit: ITEMS_PER_PAGE,
       });
