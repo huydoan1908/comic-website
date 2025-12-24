@@ -110,7 +110,7 @@ export function ComicReader({ chapters, chapterNumber = 1, comicTitle, comicId }
             {/* Chapter Pages */}
             {currentChapter.pageImageUrls.map((pageUrl, pageIndex) => (
               <div key={`${currentChapter.id}-${pageIndex}`} className="relative w-full max-w-4xl">
-                <Image src={pageUrl} alt={`Chapter ${currentChapter.chapterNumber}, Page ${pageIndex + 1}`} quality={100} width={1080} height={1620} className="w-full h-auto object-contain" priority={pageIndex === 0} loading={pageIndex < 3 ? "eager" : "lazy"} unoptimized/>
+                <Image src={pageUrl} alt={`Chapter ${currentChapter.chapterNumber}, Page ${pageIndex + 1}`} quality={100} width={1080} height={1620} className="w-full h-auto object-contain" priority={pageIndex === 0} loading={pageIndex < 3 ? "eager" : "lazy"}/>
               </div>
             ))}
           </div>
