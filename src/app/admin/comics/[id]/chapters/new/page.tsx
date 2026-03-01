@@ -16,6 +16,7 @@ import { chaptersService, comicsService } from "@/services/firebase";
 import { uploadMultipleToCloudinaryClient } from "@/lib/cloudinary-client";
 import { convertPDFToImages, convertPDFImagesToFiles, isPDFFile } from "@/lib/pdf-utils";
 import { Comic } from "@/types";
+import { MAX_FILE_SIZE } from "@/lib/constance";
 
 const chapterSchema = z.object({
   chapterNumber: z.number().min(1, "Chapter number must be at least 1"),
@@ -74,6 +75,10 @@ export default function NewChapterPage() {
   const handlePageFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
+    if (files.some((file) => file.size > MAX_FILE_SIZE)) {
+      alert("File size must be less than 10MB");
+      return;
+    }
 
     // Separate PDF files from image files
     const imageFiles = files.filter((file) => !isPDFFile(file));
@@ -165,7 +170,7 @@ export default function NewChapterPage() {
       const customFilenames = pageFiles.map((_, index) => `${sanitizedComicName}_chap${data.chapterNumber}_${sanitizedChapterName}_page_${index + 1}`);
 
       // Upload all page images directly to Cloudinary with custom names
-      const pageImageUrls = await uploadMultipleToCloudinaryClient(pageFiles, customFilenames);
+      const pageImageUrls = await uploadMultipleToCloudinaryClient(pageFiles, customFilenames, `${sanitizedComicName}/chap${data.chapterNumber}`);
 
       // Create chapter
       await chaptersService.create(comicId, {
@@ -204,7 +209,7 @@ export default function NewChapterPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Input id="chapterNumber" label="Chapter Number *" error={errors.chapterNumber?.message} type="number" min="1" {...register("chapterNumber", { valueAsNumber: true })} readOnly placeholder="Enter chapter number" />
+              <Input id="chapterNumber" label="Chapter Number *" error={errors.chapterNumber?.message} type="number" min="1" {...register("chapterNumber", { valueAsNumber: true })} placeholder="Enter chapter number" />
             </div>
 
             <div>
@@ -266,7 +271,7 @@ export default function NewChapterPage() {
             {/* Page Previews */}
             {pageFiles.length > 0 && (
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Pages ({pageFiles.length})</h3>
+                <h3 className="text-lg font-medium text-primary-foreground mb-4">Pages ({pageFiles.length})</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {pagePreviews.map((preview, index) => (
                     <div key={index} className="relative group">
@@ -282,7 +287,7 @@ export default function NewChapterPage() {
                       <button type="button" onClick={() => removePage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <X className="w-4 h-4" />
                       </button>
-                      <p className="text-xs text-gray-500 mt-1 text-center">Page {index + 1}</p>
+                      <p className="text-xs text-primary-foreground mt-1 text-center">Page {index + 1}</p>
                     </div>
                   ))}
                 </div>

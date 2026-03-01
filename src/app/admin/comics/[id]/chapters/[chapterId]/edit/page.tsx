@@ -15,6 +15,7 @@ import { Chapter, Comic } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { chaptersService, comicsService } from '@/services/firebase';
 import { uploadMultipleToCloudinaryClient } from '@/lib/cloudinary-client';
+import { MAX_FILE_SIZE } from '@/lib/constance';
 
 const chapterSchema = z.object({
   chapterNumber: z.number().min(1, 'Chapter number must be at least 1'),
@@ -98,6 +99,10 @@ export default function EditChapterPage() {
   const handleNewPageFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
+    if (files.some((file) => file.size > MAX_FILE_SIZE)) {
+      alert("File size must be less than 10MB");
+      return;
+    }
 
     setNewPageFiles(prev => [...prev, ...files]);
 
@@ -152,7 +157,7 @@ export default function EditChapterPage() {
           `${sanitizedComicName}_chap${data.chapterNumber}_page_${existingPageCount + index + 1}`
         );
         
-        newPageImageUrls = await uploadMultipleToCloudinaryClient(newPageFiles, customFilenames);
+        newPageImageUrls = await uploadMultipleToCloudinaryClient(newPageFiles, customFilenames, `${sanitizedComicName}/chap${data.chapterNumber}`);
       }
 
       // Build final page URLs array

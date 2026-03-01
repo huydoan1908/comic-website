@@ -1,6 +1,6 @@
 import { CloudinaryResponse } from '@/types';
 
-export async function uploadToCloudinaryClient(file: File, customName?: string): Promise<string> {
+export async function uploadToCloudinaryClient(file: File, customName?: string, customFolder?: string): Promise<string> {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
   
@@ -16,7 +16,7 @@ export async function uploadToCloudinaryClient(file: File, customName?: string):
     formData.append('public_id', customName);
   }
 
-  formData.append('folder', 'comics');
+  formData.append('folder', customFolder || 'comics');
 
   try {
     const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
@@ -41,7 +41,7 @@ export async function uploadToCloudinaryClient(file: File, customName?: string):
   }
 }
 
-export async function uploadMultipleToCloudinaryClient(files: File[], fileNames?: string[]): Promise<string[]> {
+export async function uploadMultipleToCloudinaryClient(files: File[], fileNames?: string[], customFolder?: string): Promise<string[]> {
   // Upload files in batches to avoid overwhelming the API
   const batchSize = 5;
   const results: string[] = [];
@@ -50,7 +50,7 @@ export async function uploadMultipleToCloudinaryClient(files: File[], fileNames?
     const batch = files.slice(i, i + batchSize);
     const batchPromises = batch.map((file, index) => {
       const customName = fileNames ? fileNames[i + index] : undefined;
-      return uploadToCloudinaryClient(file, customName);
+      return uploadToCloudinaryClient(file, customName, customFolder);
     });
     const batchResults = await Promise.all(batchPromises);
     results.push(...batchResults);
