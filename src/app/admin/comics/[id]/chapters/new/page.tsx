@@ -170,7 +170,7 @@ export default function NewChapterPage() {
       const customFilenames = pageFiles.map((_, index) => `${sanitizedComicName}_chap${data.chapterNumber}_${sanitizedChapterName}_page_${index + 1}`);
 
       // Upload all page images directly to Cloudinary with custom names
-      const pageImageUrls = await uploadMultipleToCloudinaryClient(pageFiles, customFilenames, `${sanitizedComicName}/chap${data.chapterNumber}`);
+      const pageImageUrls = await uploadMultipleToCloudinaryClient(pageFiles, customFilenames, `${sanitizedComicName}/chap_${data.chapterNumber}`);
 
       // Create chapter
       await chaptersService.create(comicId, {

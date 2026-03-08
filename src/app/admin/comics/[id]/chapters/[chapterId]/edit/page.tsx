@@ -157,7 +157,7 @@ export default function EditChapterPage() {
           `${sanitizedComicName}_chap${data.chapterNumber}_page_${existingPageCount + index + 1}`
         );
         
-        newPageImageUrls = await uploadMultipleToCloudinaryClient(newPageFiles, customFilenames, `${sanitizedComicName}/chap${data.chapterNumber}`);
+        newPageImageUrls = await uploadMultipleToCloudinaryClient(newPageFiles, customFilenames, `${sanitizedComicName}/chap_${data.chapterNumber}`);
       }
 
       // Build final page URLs array
