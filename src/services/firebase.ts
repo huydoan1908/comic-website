@@ -396,6 +396,10 @@ export const chaptersService = {
         ...updates,
         updatedAt: Timestamp.now(),
       });
+      const comicRef = doc(db, 'comics', comicId);
+      await updateDoc(comicRef, {
+        updatedAt: Timestamp.now(),
+      });
     } catch (error) {
       console.error('Error updating chapter:', error);
       throw new Error('Failed to update chapter');
