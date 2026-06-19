@@ -75,17 +75,17 @@ export default function NewChapterPage() {
   const handlePageFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    if (files.some((file) => file.size > MAX_FILE_SIZE)) {
-      alert("File size must be less than 10MB");
-      return;
-    }
-
+    
     // Separate PDF files from image files
     const imageFiles = files.filter((file) => !isPDFFile(file));
     const pdfFiles = files.filter((file) => isPDFFile(file));
-
+    
     // Handle image files (existing functionality)
     if (imageFiles.length > 0) {
+      if (imageFiles.some((file) => file.size > MAX_FILE_SIZE)) {
+        alert("File size must be less than 10MB");
+        return;
+      }
       const sortedFiles = imageFiles.sort((a, b) =>
         a.name.localeCompare(b.name, undefined, {
           numeric: true,
