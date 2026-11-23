@@ -55,3 +55,35 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Referenced by the chapter lists, which previously fell back to the default
+   bar: too bright against the dark panels and jarring over artwork. */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted-foreground);
+}
+
+/* The reader hides its own chrome, so honour a reduced-motion preference by
+   dropping the slide transitions rather than animating them. */
+@media (prefers-reduced-motion: reduce) {
+  .reader-chrome {
+    transition: none !important;
+  }
+}

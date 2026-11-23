@@ -16,6 +16,8 @@ import { Comic } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { comicsService } from '@/services/firebase';
 import { uploadToCloudinaryClient } from '@/lib/cloudinary-client';
+import { deleteCloudinaryImages } from '@/services/cloudinary-delete';
+import { publicIdFromUrl } from '@/lib/cloudinary-public-id';
 
 const comicSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -153,6 +155,27 @@ export default function EditComicPage() {
         coverImageUrl,
         bannerImageUrl,
       });
+
+      // Clean up the assets the new uploads replaced. This runs after the update
+      // succeeds, so a failure here leaves a stale asset rather than deleting an
+      // image a live document still points at. Same-day re-uploads under an
+      // unchanged title reuse the public_id, so skip those or we would destroy
+      // the image just uploaded.
+      const replacedUrls = [
+        coverImage ? comic?.coverImageUrl : undefined,
+        bannerImage ? comic?.bannerImageUrl : undefined,
+      ].filter(
+        (oldUrl, index) =>
+          oldUrl &&
+          publicIdFromUrl(oldUrl) !==
+            publicIdFromUrl(index === 0 ? coverImageUrl : bannerImageUrl)
+      );
+
+      try {
+        await deleteCloudinaryImages(replacedUrls);
+      } catch (cleanupError) {
+        console.error('Failed to remove replaced images from Cloudinary:', cleanupError);
+      }
 
       router.push(`/admin/comics/${comicId}`);
     } catch (error) {

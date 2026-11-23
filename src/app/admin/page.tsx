@@ -20,6 +20,7 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [deletingComicId, setDeletingComicId] = useState<string | null>(null);
   const { isAdmin } = useAuth();
 
   // Debounce search term by 500ms
@@ -73,13 +74,20 @@ export default function AdminDashboard() {
       return;
     }
 
-    if (confirm("Are you sure you want to delete this comic? This action cannot be undone.")) {
+    if (
+      confirm(
+        "Are you sure you want to delete this comic? Its cover, banner and every chapter page will be permanently removed from Cloudinary. This action cannot be undone."
+      )
+    ) {
+      setDeletingComicId(comicId);
       try {
         await comicsService.delete(comicId);
         fetchComics();
       } catch (error) {
         console.error("Error deleting comic:", error);
-        alert("Failed to delete comic");
+        alert(error instanceof Error ? `Failed to delete comic: ${error.message}` : "Failed to delete comic");
+      } finally {
+        setDeletingComicId(null);
       }
     }
   };
@@ -211,9 +219,17 @@ export default function AdminDashboard() {
                                 <span className="hidden md:inline ml-1">Manage</span>
                               </Button>
                             </Link>
-                            <Button variant="danger" size="sm" onClick={() => handleDeleteComic(comic.id)} title="Delete Comic">
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleDeleteComic(comic.id)}
+                              disabled={deletingComicId !== null}
+                              title="Delete Comic"
+                            >
                               <Trash2 className="w-4 h-4" />
-                              <span className="hidden md:inline ml-1">Delete</span>
+                              <span className="hidden md:inline ml-1">
+                                {deletingComicId === comic.id ? "Deleting..." : "Delete"}
+                              </span>
                             </Button>
                           </div>
                         </td>

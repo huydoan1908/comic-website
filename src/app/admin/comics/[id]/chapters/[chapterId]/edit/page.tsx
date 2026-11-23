@@ -17,6 +17,8 @@ import { Chapter, Comic } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { chaptersService, comicsService } from '@/services/firebase';
 import { uploadMultipleToCloudinaryClient } from '@/lib/cloudinary-client';
+import { deleteCloudinaryImages } from '@/services/cloudinary-delete';
+import { moveChapterImages } from '@/services/cloudinary-rename';
 import { MAX_FILE_SIZE } from '@/lib/constance';
 import Sortable from '@/components/Sortable';
 
@@ -154,18 +156,44 @@ export default function EditChapterPage() {
         newPageImageUrls = await uploadMultipleToCloudinaryClient(newPageFiles, customFilenames, `${sanitizedComicName}/chap_${data.chapterNumber}`);
       }
 
-      // Build final page URLs array
-      const finalPageUrls = [
-        ...existingPages.filter((_, index) => !pagesToDelete.includes(index)),
-        ...newPageImageUrls,
-      ];
+      const retainedPages = existingPages.filter((_, index) => !pagesToDelete.includes(index));
 
-      // Update chapter
-      await chaptersService.update(comicId, chapterId, {
-        chapterNumber: data.chapterNumber,
-        title: data.title || undefined,
-        pageImageUrls: finalPageUrls,
-      });
+      // Remove the dropped pages from Cloudinary before saving. A failure here
+      // aborts the save, so the chapter never loses track of a live image.
+      await deleteCloudinaryImages(
+        existingPages.filter((_, index) => pagesToDelete.includes(index))
+      );
+
+      // Pages are stored in a folder named after the chapter number, so a renumber
+      // has to carry the kept pages over. Newly uploaded ones already went into the
+      // new folder above.
+      let movedPages = retainedPages;
+      let rollbackPageMove = async () => {};
+
+      if (chapter && data.chapterNumber !== chapter.chapterNumber) {
+        const { urlMap, rollback } = await moveChapterImages([
+          { urls: retainedPages, chapterNumber: data.chapterNumber },
+        ]);
+
+        movedPages = retainedPages.map(url => urlMap.get(url) ?? url);
+        rollbackPageMove = rollback;
+      }
+
+      // Build final page URLs array
+      const finalPageUrls = [...movedPages, ...newPageImageUrls];
+
+      try {
+        // Update chapter
+        await chaptersService.update(comicId, chapterId, {
+          chapterNumber: data.chapterNumber,
+          title: data.title || undefined,
+          pageImageUrls: finalPageUrls,
+        });
+      } catch (error) {
+        // Otherwise the saved URLs would keep pointing at IDs that no longer exist.
+        await rollbackPageMove();
+        throw error;
+      }
 
       router.push(`/admin/comics/${comicId}`);
     } catch (error) {

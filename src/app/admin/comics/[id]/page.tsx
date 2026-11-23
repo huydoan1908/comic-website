@@ -58,7 +58,11 @@ export default function ComicManagePage() {
       return;
     }
 
-    if (!confirm('Are you sure you want to delete this chapter? This action cannot be undone.')) {
+    if (
+      !confirm(
+        'Are you sure you want to delete this chapter? All of its page images will be permanently removed from Cloudinary. This action cannot be undone.'
+      )
+    ) {
       return;
     }
 
@@ -70,7 +74,7 @@ export default function ComicManagePage() {
       await fetchComicData();
     } catch (error) {
       console.error('Error deleting chapter:', error);
-      alert('Failed to delete chapter');
+      alert(error instanceof Error ? `Failed to delete chapter: ${error.message}` : 'Failed to delete chapter');
     } finally {
       setDeleting(null);
     }
